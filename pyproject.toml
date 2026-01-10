@@ -6,14 +6,14 @@ build-backend = "setuptools.build_meta"
 name = "resonitelink.py"
 description = "A Python wrapper for the ResoniteLink API"
 readme = { file = "README.md", content-type = "text/markdown" }
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = [ "LICENSE" ]
 requires-python = ">=3.14"
 authors = [
     { name = "JackTheFoxOtter" }
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License",
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Operating System :: OS Independent",
