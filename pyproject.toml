@@ -28,3 +28,6 @@ dynamic = [ "version", "dependencies" ]
 
 [project.urls]
 Homepage = "https://github.com/JackTheFoxOtter/ResoniteLink.py"
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements.txt" }
