@@ -1,18 +1,17 @@
 from __future__ import annotations # Delayed evaluation of type hints (PEP 563)
 
-from typing import Union, Type, List, Dict, Generator, Tuple, Any
+from typing import Union, Any, Type, Tuple, Dict, Generator, TypeVar, Generic, ClassVar
 from annotationlib import get_annotations
 import logging
 
 logger = logging.getLogger("ResoniteLinkModels")
 logger.setLevel(logging.DEBUG)
 
-# Global dicts used as model registers
 _model_type_name_mapping : Dict[str, JSONModel] = {}
 _model_data_class_mapping : Dict[Type, JSONModel] = {}
 
-
-class JSONModel():
+D = TypeVar('D')
+class JSONModel(Generic[D]):
     """
     Descriptor class for JSON serializable "models" with "properties".
     A model is associated with a unique type name, which in JSON is represented in the "$type" parameter.
@@ -20,30 +19,31 @@ class JSONModel():
     
     """
     _type_name : str
-    _data_class : Type
-    _properties : List[Tuple[str, JSONProperty]]
+    _data_class : D
+    _properties : Dict[str, JSONProperty]
     
     @property
     def type_name(self) -> str:
         return self._type_name
     
     @property
-    def data_class(self) -> Type:
+    def data_class(self) -> D:
         return self._data_class
     
     @property
-    def properties(self) -> List[Tuple[str, JSONProperty]]:
+    def properties(self) -> Dict[str, JSONProperty]:
         return self._properties
 
-    def __init__(self, type_name : str, data_class : Type):
+    def __init__(self, type_name : str, data_class : D):
         self._type_name = type_name
         self._data_class = data_class
-        self._properties = list(self._find_properties())
+        self._properties = dict(self._find_properties_in_data_class(self.data_class)) # type: ignore
         self._register()
     
-    def _find_properties(self) -> Generator[Tuple[str, JSONProperty], Any, Any]:
+    def _find_properties_in_data_class(self, data_class : Type) -> Generator[Tuple[str, JSONProperty], Any, Any]:
         """
-        Inspects the model's data class and returns a list of all defined JSONProperties.
+        Inspects the specified data class and returns a list of all defined JSONProperties.
+        Also recursively processes potential base classes.
 
         Returns
         -------
@@ -51,7 +51,11 @@ class JSONModel():
         and tpl[1] is the first JSONProperty found in its annotation metadata.
 
         """
-        for key, annotation in get_annotations(self.data_class).items():
+        for base_class in data_class.__bases__:
+            # If there are base classes, they will be processed recursively first
+            for tpl in self._find_properties_in_data_class(base_class): yield tpl
+
+        for key, annotation in get_annotations(data_class).items():
             if not hasattr(annotation, '__metadata__'):
                 # We can skip all annotations that don't have metadata
                 continue
@@ -91,11 +95,11 @@ class JSONModel():
             logger.debug(f"  -> No fields annotated with JSONProperty found!")
             logger.warning(f"Data class '{self.data_class}' of JSONModel '{self.type_name}' has no fields annotated with JSONProperty!")
         else:
-            for (key, json_property) in self.properties:
+            for key, json_property in self.properties.items():
                 logger.debug(f"  -> '{key}': {json_property}")
         
         _model_type_name_mapping[self.type_name] = self
-        _model_data_class_mapping[self.data_class] = self
+        _model_data_class_mapping[self.data_class] = self # type: ignore
     
     def __repr__(self) -> str:
         return f"<JSONModel type_name='{self.type_name}', data_class='{self.data_class}', property_count={len(self.properties)}>"
@@ -151,7 +155,7 @@ def json_model(type_name : str):
         (This will be used by JSON serializer / deserializer as the '$type' value.)
 
     """
-    def _model_decorator(data_class : Type):
+    def _model_decorator(data_class : D) -> D:
         # Creating a model instance automatically registers it
         JSONModel(type_name=type_name, data_class=data_class)
 

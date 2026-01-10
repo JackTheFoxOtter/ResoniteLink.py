@@ -19,3 +19,4 @@ class UpdateSlot(MessageBase):
 @json_model("removeSlot")
 class RemoveSlot(MessageBase):
     slot_id : Annotated[str, JSONProperty("slotId")]
+    fake_get_slot : Annotated[GetSlot, JSONProperty("fakeGetSlotForRecursiveTesting")]
