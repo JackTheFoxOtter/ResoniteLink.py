@@ -19,10 +19,6 @@ def derive_version() -> str:
             out, err = p.communicate()
             if out:
                 version += out.decode('utf-8').strip()
-            p = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = p.communicate()
-            if out:
-                version += '+g' + out.decode('utf-8').strip()
         except Exception:
             pass
 
