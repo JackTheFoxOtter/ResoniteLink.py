@@ -18,7 +18,7 @@ class ResoniteLinkJSONEncoder(JSONEncoder):
         - JSONProperty annotated fields will use their `name` as the key in the resultng JSON object.
 
         Any other object will be passed to the `default` method of the base class (`json.JSONEncoder`).
-        This naturally supports encoding nested models due to how JSONEncoder parsing is implemented.
+        This naturally supports encoding nested models due to how JSONEncoder is implemented.
 
         Parameters
         ----------

@@ -3,8 +3,10 @@ from typing import Any, Dict
 from json import JSONDecoder
 import logging
 
+
 logger = logging.getLogger("ResoniteLinkJSONDecoder")
 logger.setLevel(logging.DEBUG)
+
 
 class ResoniteLinkJSONDecoder(JSONDecoder):
     """
@@ -16,7 +18,25 @@ class ResoniteLinkJSONDecoder(JSONDecoder):
 
     def _object_hook(self, obj : Dict[str, Any]) -> Any:
         """
-        Implements logic to decode custom model structure.
+        Decoding logic to decode custom model structure.
+
+        If the JSON object to decode specifies the type name of a registered JSONModel via $type:
+        - A new instance of the model's data class is created.
+        - All parameters that map to existing fields in the data class are carried over into the data class instance.
+        - The data class instance is returned in place of the input object.
+
+        Any other objects will be returned the way they were deserialized by the base class (`json.JSONDecoder`).
+        This naturally supports decoding nested models due to how JSONDecoder is implemented.
+
+        Parameters
+        ----------
+        obj : Dict[str, Any]
+            The deserialized JSON object that was produced by the base class.
+        
+        Returns
+        -------
+        A new instance of the model's data class if the input object was identified as a registered JSONModel, or
+        the unmodified input object as produced by the base class if it wasn't.
 
         """
         type_name : Any = obj.get('$type', None)

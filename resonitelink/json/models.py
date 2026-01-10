@@ -4,11 +4,13 @@ from typing import Union, Any, Type, Tuple, Dict, Generator, TypeVar, Generic, C
 from annotationlib import get_annotations
 import logging
 
+
 logger = logging.getLogger("ResoniteLinkModels")
 logger.setLevel(logging.DEBUG)
 
 _model_type_name_mapping : Dict[str, JSONModel] = {}
 _model_data_class_mapping : Dict[Type, JSONModel] = {}
+
 
 D = TypeVar('D')
 class JSONModel(Generic[D]):
