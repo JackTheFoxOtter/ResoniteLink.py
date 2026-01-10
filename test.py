@@ -3,7 +3,8 @@ logging.basicConfig(format='%(asctime)s [%(levelname)-8s] %(name)s: %(message)s'
 
 from resonitelink import ResoniteLinkClient, ResoniteLinkClientEvent
 from resonitelink.json import ResoniteLinkJSONEncoder, ResoniteLinkJSONDecoder, get_model_for_data_class
-from resonitelink.models import RemoveSlot, GetSlot
+from resonitelink.models.datamodel import Slot, Reference
+from resonitelink.models.messages import RemoveSlot, GetSlot, AddSlot
 import asyncio
 import json
 
@@ -11,26 +12,20 @@ logger = logging.getLogger("App")
 logger.setLevel(logging.DEBUG)
 
 
-get_slot = GetSlot()
-get_slot.message_id = "Py_01"
-get_slot.slot_id = "Py_02"
-get_slot.depth = 0
-get_slot.include_component_data = False
+port = int(input("ResoniteLink Port: "))
 
-json_str = json.dumps(get_slot, cls=ResoniteLinkJSONEncoder)
-logger.debug(f"JSON encoded {get_slot} -> '{json_str}'")
-json_obj : GetSlot = json.loads(json_str, cls=ResoniteLinkJSONDecoder)
-logger.debug(f"JSON decoded '{json_str}' -> {json_obj}")
-logger.debug(f"Message ID: '{json_obj.message_id}', Slot ID: '{json_obj.slot_id}', Depth: {json_obj.depth}, Include Component Data: {json_obj.include_component_data}")
+async def on_client_started(client : ResoniteLinkClient):
+    logger.info("Start event invoked!")
 
+    msg = AddSlot()
+    msg.data = Slot()
+    msg.data.parent = Reference()
+    msg.data.parent.target_id = "Root"
+    msg.data.parent.target_type = "Slot"
+    logger.info(f"Sending message: {msg}")
+    await client.send_message(msg)
 
-# port = int(input("ResoniteLink Port: "))
+client = ResoniteLinkClient(log_level=logging.DEBUG)
+client.register_event_handler(ResoniteLinkClientEvent.STARTED, on_client_started) # TODO: Decorator syntax
 
-# async def on_client_started(client : ResoniteLinkClient):
-#     logger.info("Start event invoked!")
-#     await client._send_message('{"$type" : "getSlot", "slotId" : "Root", "includeComponentData" : false, "depth" : 0}')
-
-# client = ResoniteLinkClient(log_level=logging.DEBUG)
-# client.register_event_handler(ResoniteLinkClientEvent.STARTED, on_client_started) # TODO: Decorator syntax
-
-# asyncio.run(client.start(port))
+asyncio.run(client.start(port))

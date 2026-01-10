@@ -1,7 +1,10 @@
 from __future__ import annotations # Delayed evaluation of type hints (PEP 563)
 
+from resonitelink.models.messages import BaseMessage
+from resonitelink.json import ResoniteLinkJSONDecoder, ResoniteLinkJSONEncoder
 from typing import Union, Dict, List, Callable, Coroutine
 from enum import Enum
+import json
 from asyncio import \
     Event, \
     get_running_loop, \
@@ -11,10 +14,8 @@ from websockets import \
     ClientConnection as WebSocketClientConnection
 from websockets.exceptions import \
     ConnectionClosed as WebSocketConnectionClosed
-from json import \
-    loads as load_json_str, \
-    dumps as dump_json_str
 import logging
+import json
 
 
 class ResoniteLinkClientEvent(Enum):
@@ -165,15 +166,23 @@ class ResoniteLinkClient():
             The received message to process
 
         """
-        message = load_json_str(message_bytes)
+        message = json.loads(message_bytes, cls=ResoniteLinkJSONDecoder)
         self._logger.debug(f"Received message: {message}")
 
-    async def _send_message(self, message : Union[bytes, str]):
+    async def _send_raw_message(self, message : Union[bytes, str]):
         """
-        Send a message to the connected client.
+        Send a raw message (bytes or str) to the server.
 
         """
         await self._on_started.wait() # Wait for client to fully start before sending messages
 
         self._logger.debug(f"Sending message: {message}")
         await self._ws.send(message, text=True)
+    
+    async def send_message(self, message : BaseMessage):
+        """
+        Sends a message to the server.
+
+        """
+        raw_message = json.dumps(message, cls=ResoniteLinkJSONEncoder)
+        await self._send_raw_message(raw_message)

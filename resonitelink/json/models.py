@@ -141,6 +141,11 @@ def get_model_for_data_class(data_class : Type) -> JSONModel:
     -------
     The JSONModel associated with this data class.
 
+    Raises
+    ------
+    KeyError
+        If there is no registered model with the specified data class.
+
     """
     global _model_data_class_mapping
 
@@ -159,6 +164,11 @@ def get_model_for_type_name(type_name : str) -> JSONModel:
     Returns
     -------
     The JSONModel associated with this type name.
+
+    Raises
+    ------
+    KeyError
+        If there is no registered model with the specified type name.
 
     """
     global _model_type_name_mapping

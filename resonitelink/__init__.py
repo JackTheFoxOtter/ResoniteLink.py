@@ -19,4 +19,5 @@ __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
 from .json import *
 from .models import *
+from .utils import *
 from .client import *
