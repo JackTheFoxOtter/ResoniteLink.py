@@ -1,6 +1,6 @@
 from __future__ import annotations # Delayed evaluation of type hints (PEP 563)
 
-from typing import Union, Any, Type, Tuple, Dict, Generator, TypeVar, Generic, ClassVar
+from typing import Union, Any, Type, Tuple, List, Dict, Generator, TypeVar, Generic, ClassVar
 from annotationlib import get_annotations
 import logging
 
@@ -12,7 +12,7 @@ _model_type_name_mapping : Dict[str, JSONModel] = {}
 _model_data_class_mapping : Dict[Type, JSONModel] = {}
 
 
-D = TypeVar('D')
+D = TypeVar('D', bound=Type)
 class JSONModel(Generic[D]):
     """
     Descriptor class for JSON serializable "models" with "properties".
@@ -190,11 +190,16 @@ def json_model(type_name : str):
     """
     def _model_decorator(data_class : D) -> D:
         # Creating a model instance automatically registers it
-        JSONModel(type_name=type_name, data_class=data_class)
+        model = JSONModel(type_name=type_name, data_class=data_class)
 
-        # TODO: Inject custom __repr__ that lists properties?
+        # Inject custom __repr__
+        def _repr(self) -> str:
+            return f"<{data_class.__name__} (data class for JSONModel '{model.type_name}')>"
 
-        return data_class # Return the unmodified decorated class
+        setattr(data_class, '__repr__', _repr)
+
+        # Return decorated class again
+        return data_class
 
     return _model_decorator
 

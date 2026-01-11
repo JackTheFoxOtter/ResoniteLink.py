@@ -12,16 +12,15 @@ logger = logging.getLogger("App")
 logger.setLevel(logging.DEBUG)
 
 
-port = int(input("ResoniteLink Port: "))
+# port = int(input("ResoniteLink Port: "))
+port = 42301
 
 async def on_client_started(client : ResoniteLinkClient):
     logger.info("Start event invoked!")
 
-    msg = AddSlot()
-    msg.data = Slot()
-    msg.data.parent = Reference()
-    msg.data.parent.target_id = "Root"
-    msg.data.parent.target_type = "Slot"
+    msg = AddSlot(data=Slot(
+        parent=Reference(target_id="Root", target_type="Slot")
+    ))
     logger.info(f"Sending message: {msg}")
     await client.send_message(msg)
 
