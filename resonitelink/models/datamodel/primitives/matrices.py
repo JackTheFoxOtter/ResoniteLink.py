@@ -15,7 +15,7 @@ class Float2x2():
     m11 : Annotated[float, JSONProperty("m11")]
 
 
-@json_model("float3x2")
+@json_model("float3x3")
 @dataclass(slots=True)
 class Float3x3():
     m00 : Annotated[float, JSONProperty("m00")]
@@ -59,7 +59,7 @@ class Double2x2():
     m11 : Annotated[float, JSONProperty("m11")]
 
 
-@json_model("double3x2")
+@json_model("double3x3")
 @dataclass(slots=True)
 class Double3x3():
     m00 : Annotated[float, JSONProperty("m00")]

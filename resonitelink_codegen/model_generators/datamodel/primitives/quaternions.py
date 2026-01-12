@@ -1,4 +1,5 @@
-from resonitelink_codegen import CodeGenerator, type_mappings, quaternion_types
+from resonitelink_codegen import CodeGenerator
+from resonitelink.utils.types import type_mappings, quaternion_types
 from typing import Type, Generator
 
 
@@ -34,7 +35,7 @@ class QuaternionsGenerator(CodeGenerator):
         yield f"from typing import Annotated\n"
         yield f"\n\n"
 
-        def _generate_vector_class(model_name : str, class_name : str, element_type : Type):
+        def _generate_quaternion_class(model_name : str, class_name : str, element_type : Type):
             yield f"@json_model(\"{model_name}\")\n"
             yield f"@dataclass(slots=True)\n"
             yield f"class {class_name}():\n"
@@ -46,6 +47,6 @@ class QuaternionsGenerator(CodeGenerator):
         for quaternion_type in quaternion_types:
             type_info = type_mappings[quaternion_type]
 
-            yield from _generate_vector_class(f"{quaternion_type}Q", f"{type_info.type_name}Q", type_info.type)
+            yield from _generate_quaternion_class(f"{quaternion_type}Q", f"{type_info.type_name}Q", type_info.type)
             if quaternion_types.index(quaternion_type) < len(quaternion_types) - 1:
                 yield f"\n\n"

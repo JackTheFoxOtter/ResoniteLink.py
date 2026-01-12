@@ -1,4 +1,5 @@
-from resonitelink_codegen import CodeGenerator, type_mappings, vector_types
+from resonitelink_codegen import CodeGenerator
+from resonitelink.utils.types import type_mappings, vector_types
 from typing import Type, List, Generator
 
 

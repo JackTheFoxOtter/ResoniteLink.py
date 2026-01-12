@@ -21,4 +21,4 @@ class Slot(Worker):
     children : Annotated[Any, JSONProperty("children")] = MISSING # TODO: Should be List[Slot]
 
     # Special Slot references
-    Root = Reference(target_id="Root", target_type="slot")
+    Root = Reference(id=MISSING, target_id="Root", target_type="slot")

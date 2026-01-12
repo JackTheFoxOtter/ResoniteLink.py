@@ -1,3 +1,6 @@
-# from .arrays import ArraysGenerator
-# from .fields import FieldsGenerator
-# from .nullable_fields import NullableFieldsGenerator
+from .arrays import ArraysGenerator
+from .fields import FieldsGenerator
+
+# Load generators
+ArraysGenerator()
+FieldsGenerator()

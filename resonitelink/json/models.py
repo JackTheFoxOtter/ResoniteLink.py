@@ -45,6 +45,7 @@ class JSONModel(Generic[D]):
         self._type_name = type_name
         self._data_class = data_class
         self._properties = dict(self._find_properties_in_data_class(self.data_class)) # type: ignore
+        self._verify_properties(self._properties)
         self._property_name_mapping = dict(self._get_property_name_mapping(self._properties))
         self._register()
     
@@ -78,6 +79,19 @@ class JSONModel(Generic[D]):
             if json_property:
                 # Success! We've found a JSON property of the model class
                 yield (key, json_property)
+    
+    def _verify_properties(self, properties : Dict[str, JSONProperty]):
+        """
+        Verifies the provided properties.
+        This is needed as a separate step for issues that can only be detected after all properties have been passed,
+        for example wether a abstract JSONProperty has not been overridden.
+
+        """
+        for key, json_property in properties.items():
+            if json_property.abstract:
+                # Abstract property that wasn't overridden
+                raise TypeError(f"Invalid properties for JSONModel '{self}': Data class does not provide concrete implementation of abstract JSONProperty '{json_property}'!")
+
     
     def _get_property_name_mapping(self, properties : Dict[str, JSONProperty]) -> Generator[Tuple[str, str], Any, Any]:
         """
@@ -217,6 +231,7 @@ class JSONProperty():
     """
     _json_name : str
     _model_type_name : Optional[str]
+    _abstract : bool
 
     @property
     def json_name(self) -> str:
@@ -226,7 +241,11 @@ class JSONProperty():
     def model_type_name(self) -> Optional[str]:
         return self._model_type_name
 
-    def __init__(self, json_name : str, model_type_name : Optional[str] = None):
+    @property
+    def abstract(self) -> bool:
+        return self._abstract
+
+    def __init__(self, json_name : str, model_type_name : Optional[str] = None, abstract = False):
         """
         Defines a new JSONProperty.
 
@@ -238,10 +257,14 @@ class JSONProperty():
             The child model's `type_name` if this property can hold a different JSON model's data. This is used to 
             identify 'anonymous' model objects during decoding of JSON data, those models don't specify an explit `$type` 
             parameter, since their type is implicitly defined through the type of their field in the parent object.
+        abstract : bool (default=False)
+            Whether this property is "abstract" and needs to be overridden by a implementing class. If a `JSONModel` with
+            an abstract `JSONProperty` is created, a `TypeError` will be raised.
 
         """
         self._json_name = json_name
         self._model_type_name = model_type_name
+        self._abstract = abstract
     
     def __repr__(self) -> str:
-        return f"<JSONProperty name='{self.json_name}'>"
+        return f"<JSONProperty name='{self.json_name}{f', model_type_name:{self._model_type_name}' if self._model_type_name else ''}{' (abstract)' if self._abstract else ''}'>"
