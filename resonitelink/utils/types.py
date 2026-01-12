@@ -101,31 +101,32 @@ for matrix_type in matrix_types:
 class LibraryTypeInfo():
     type_name : str
     type : Type
+    model_type_name : str
 
 
 type_mappings : Dict[str, LibraryTypeInfo] = { }
 
 # 1. All non-model types need to be mapped manually
 type_mappings.update({
-    "bool": LibraryTypeInfo("Bool", bool),
+    "bool": LibraryTypeInfo("Bool", bool, ""),
     
-    "byte": LibraryTypeInfo("Byte", int),
-    "sbyte": LibraryTypeInfo("SByte", int),
-    "ushort": LibraryTypeInfo("UShort", int),
-    "short": LibraryTypeInfo("Short", int),
-    "uint": LibraryTypeInfo("UInt", int),
-    "int": LibraryTypeInfo("Int", int),
-    "ulong": LibraryTypeInfo("ULong", int),
-    "long": LibraryTypeInfo("Long", int),
+    "byte": LibraryTypeInfo("Byte", int, ""),
+    "sbyte": LibraryTypeInfo("SByte", int, ""),
+    "ushort": LibraryTypeInfo("UShort", int, ""),
+    "short": LibraryTypeInfo("Short", int, ""),
+    "uint": LibraryTypeInfo("UInt", int, ""),
+    "int": LibraryTypeInfo("Int", int, ""),
+    "ulong": LibraryTypeInfo("ULong", int, ""),
+    "long": LibraryTypeInfo("Long", int, ""),
     
-    "float": LibraryTypeInfo("Float", float),
-    "double": LibraryTypeInfo("Double", float),
+    "float": LibraryTypeInfo("Float", float, ""),
+    "double": LibraryTypeInfo("Double", float, ""),
     
-    "decimal": LibraryTypeInfo("Decimal", Decimal),
+    "decimal": LibraryTypeInfo("Decimal", Decimal, ""),
     
-    "char": LibraryTypeInfo("Char", str),
-    "string": LibraryTypeInfo("String", str),
-    "Uri": LibraryTypeInfo("Uri", str)
+    "char": LibraryTypeInfo("Char", str, ""),
+    "string": LibraryTypeInfo("String", str, ""),
+    "Uri": LibraryTypeInfo("Uri", str, "")
 })
 
 # 2. Now we can get the model for every remaining primitive type and add it
@@ -144,7 +145,7 @@ for primitive_type in primitive_types:
     
     else:
         # Model found! Values are stored using its data class
-        type_mappings[primitive_type] = LibraryTypeInfo(make_first_char_uppercase(primitive_type), model.data_class)
+        type_mappings[primitive_type] = LibraryTypeInfo(make_first_char_uppercase(primitive_type), model.data_class, model.type_name)
 
 
 logger.debug(f"Registered types: [ {', '.join(type_mappings.keys())} ]")

@@ -30,7 +30,7 @@ class QuaternionsGenerator(CodeGenerator):
         Generates the content of quaternions.py
 
         """
-        yield f"from resonitelink.json import JSONProperty, json_model\n"
+        yield f"from resonitelink.json import MISSING, JSONProperty, json_model\n"
         yield f"from dataclasses import dataclass\n"
         yield f"from typing import Annotated\n"
         yield f"\n\n"
@@ -39,10 +39,10 @@ class QuaternionsGenerator(CodeGenerator):
             yield f"@json_model(\"{model_name}\")\n"
             yield f"@dataclass(slots=True)\n"
             yield f"class {class_name}():\n"
-            yield f"    x : Annotated[{element_type.__name__}, JSONProperty(\"x\")]\n"
-            yield f"    y : Annotated[{element_type.__name__}, JSONProperty(\"y\")]\n"
-            yield f"    z : Annotated[{element_type.__name__}, JSONProperty(\"z\")]\n"
-            yield f"    w : Annotated[{element_type.__name__}, JSONProperty(\"w\")]\n"
+            yield f"    x : Annotated[{element_type.__name__}, JSONProperty(\"x\")] = MISSING\n"
+            yield f"    y : Annotated[{element_type.__name__}, JSONProperty(\"y\")] = MISSING\n"
+            yield f"    z : Annotated[{element_type.__name__}, JSONProperty(\"z\")] = MISSING\n"
+            yield f"    w : Annotated[{element_type.__name__}, JSONProperty(\"w\")] = MISSING\n"
 
         for quaternion_type in quaternion_types:
             type_info = type_mappings[quaternion_type]

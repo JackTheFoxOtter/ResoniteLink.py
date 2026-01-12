@@ -42,14 +42,13 @@ class FieldsGenerator(CodeGenerator):
         yield f"from typing import Annotated, Optional\n"
         yield f"\n\n"
 
-        def _generate_field_class(model_name : str, class_name : str, value_type : Type, value_type_name : str, nullable : bool):
+        def _generate_field_class(model_name : str, class_name : str, value_type : Type, value_type_name : str, nullable : bool, model_type_name : str):
             yield f"@json_model(\"{model_name}\")\n"
             yield f"@dataclass(slots=True)\n"
             yield f"class {class_name}(Field):\n"
-            if nullable:
-                yield f"    value : Annotated[Optional[{value_type.__name__}], JSONProperty(\"value\")] = MISSING\n"
-            else:
-                yield f"    value : Annotated[{value_type.__name__}, JSONProperty(\"value\")] = MISSING\n"
+            type_hint_str = f"Optional[{value_type.__name__}]" if nullable else f"{value_type.__name__}"
+            json_prop_str = f"JSONProperty(\"value\", model_type_name=\"{model_type_name}\")" if model_type_name else f"JSONProperty(\"value\")"
+            yield f"    value : Annotated[{type_hint_str}, {json_prop_str}] = MISSING\n"
             yield f"    \n"
             yield f"    @property\n"
             yield f"    def value_type_name(self) -> str:\n"
@@ -59,7 +58,7 @@ class FieldsGenerator(CodeGenerator):
             type_info = type_mappings[primitive_type]
 
             # 1. Non-Nullable fields
-            yield from _generate_field_class(f"field_{primitive_type}", f"Field_{type_info.type_name}", type_info.type, primitive_type, False)
+            yield from _generate_field_class(f"field_{primitive_type}", f"Field_{type_info.type_name}", type_info.type, primitive_type, False, type_info.model_type_name)
             yield f"\n\n"
             
             if primitive_type in non_nullable_types:
@@ -69,6 +68,6 @@ class FieldsGenerator(CodeGenerator):
                 continue
             
             # 2. Nullable fields
-            yield from _generate_field_class(f"field_{primitive_type}?", f"Field_Nullable_{type_info.type_name}", type_info.type, primitive_type, True)
+            yield from _generate_field_class(f"field_{primitive_type}?", f"Field_Nullable_{type_info.type_name}", type_info.type, primitive_type, True, type_info.model_type_name)
             if primitive_types.index(primitive_type) < len(primitive_types) - 1:
                 yield f"\n\n"

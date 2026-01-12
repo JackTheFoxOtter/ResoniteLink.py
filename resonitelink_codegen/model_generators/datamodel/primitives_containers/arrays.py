@@ -44,11 +44,12 @@ class ArraysGenerator(CodeGenerator):
         yield f"from typing import Annotated, List\n"
         yield f"\n\n"
 
-        def _generate_array_class(model_name : str, class_name : str, value_type : Type, value_type_name : str):
+        def _generate_array_class(model_name : str, class_name : str, value_type : Type, value_type_name : str, model_type_name : str):
             yield f"@json_model(\"{model_name}\")\n"
             yield f"@dataclass(slots=True)\n"
             yield f"class {class_name}(SyncArray):\n"
-            yield f"    values : Annotated[List[{value_type.__name__}], JSONProperty(\"values\")] = MISSING\n"
+            json_prop_str = f"JSONProperty(\"values\", model_type_name=\"{model_type_name}\")" if model_type_name else f"JSONProperty(\"values\")"
+            yield f"    values : Annotated[List[{value_type.__name__}], {json_prop_str}] = MISSING\n"
             yield f"    \n"
             yield f"    @property\n"
             yield f"    def value_type_name(self) -> str:\n"
@@ -57,6 +58,6 @@ class ArraysGenerator(CodeGenerator):
         for primitive_type in primitive_types:
             type_info = type_mappings[primitive_type]
 
-            yield from _generate_array_class(f"array_{primitive_type}", f"Array_{type_info.type_name}", type_info.type, primitive_type)
+            yield from _generate_array_class(f"array_{primitive_type}", f"Array_{type_info.type_name}", type_info.type, primitive_type, type_info.model_type_name)
             if primitive_types.index(primitive_type) < len(primitive_types) - 1:
                 yield f"\n\n"

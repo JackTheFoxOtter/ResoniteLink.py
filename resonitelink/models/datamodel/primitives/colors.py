@@ -1,4 +1,4 @@
-from resonitelink.json import JSONProperty, json_model
+from resonitelink.json import MISSING, JSONProperty, json_model
 from dataclasses import dataclass
 from typing import Annotated
 
@@ -6,26 +6,26 @@ from typing import Annotated
 @json_model("color")
 @dataclass(slots=True)
 class Color():
-    r : Annotated[float, JSONProperty("r")]
-    g : Annotated[float, JSONProperty("g")]
-    b : Annotated[float, JSONProperty("b")]
-    a : Annotated[float, JSONProperty("a")]
+    r : Annotated[float, JSONProperty("r")] = MISSING
+    g : Annotated[float, JSONProperty("g")] = MISSING
+    b : Annotated[float, JSONProperty("b")] = MISSING
+    a : Annotated[float, JSONProperty("a")] = MISSING
 
 
 @json_model("colorX")
 @dataclass(slots=True)
 class ColorX():
-    r : Annotated[float, JSONProperty("r")]
-    g : Annotated[float, JSONProperty("g")]
-    b : Annotated[float, JSONProperty("b")]
-    a : Annotated[float, JSONProperty("a")]
-    profile : Annotated[str, JSONProperty("profile")]
+    r : Annotated[float, JSONProperty("r")] = MISSING
+    g : Annotated[float, JSONProperty("g")] = MISSING
+    b : Annotated[float, JSONProperty("b")] = MISSING
+    a : Annotated[float, JSONProperty("a")] = MISSING
+    profile : Annotated[str, JSONProperty("profile")] = MISSING
 
 
 @json_model("color32")
 @dataclass(slots=True)
 class Color32():
-    r : Annotated[int, JSONProperty("r")]
-    g : Annotated[int, JSONProperty("g")]
-    b : Annotated[int, JSONProperty("b")]
-    a : Annotated[int, JSONProperty("a")]
+    r : Annotated[int, JSONProperty("r")] = MISSING
+    g : Annotated[int, JSONProperty("g")] = MISSING
+    b : Annotated[int, JSONProperty("b")] = MISSING
+    a : Annotated[int, JSONProperty("a")] = MISSING

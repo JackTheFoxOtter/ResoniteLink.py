@@ -28,7 +28,7 @@ class VectorsGenerator(CodeGenerator):
         Generates the content of vectors.py
 
         """
-        yield f"from resonitelink.json import JSONProperty, json_model\n"
+        yield f"from resonitelink.json import MISSING, JSONProperty, json_model\n"
         yield f"from dataclasses import dataclass\n"
         yield f"from typing import Annotated\n"
         yield f"\n\n"
@@ -38,7 +38,7 @@ class VectorsGenerator(CodeGenerator):
             yield f"@dataclass(slots=True)\n"
             yield f"class {class_name}():\n"
             for element_name in element_names:
-                yield f"    {element_name} : Annotated[{element_type.__name__}, JSONProperty(\"{element_name}\")]\n"
+                yield f"    {element_name} : Annotated[{element_type.__name__}, JSONProperty(\"{element_name}\")] = MISSING\n"
 
         for vector_type in vector_types:
             type_info = type_mappings[vector_type]
