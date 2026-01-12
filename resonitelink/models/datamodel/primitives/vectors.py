@@ -8,14 +8,14 @@ from typing import Annotated
 
 @json_model("bool2")
 @dataclass(slots=True)
-class Vector_Bool2():
+class Bool2():
     x : Annotated[bool, JSONProperty("x")]
     y : Annotated[bool, JSONProperty("y")]
 
 
 @json_model("bool3")
 @dataclass(slots=True)
-class Vector_Bool3():
+class Bool3():
     x : Annotated[bool, JSONProperty("x")]
     y : Annotated[bool, JSONProperty("y")]
     z : Annotated[bool, JSONProperty("z")]
@@ -23,7 +23,7 @@ class Vector_Bool3():
 
 @json_model("bool4")
 @dataclass(slots=True)
-class Vector_Bool4():
+class Bool4():
     x : Annotated[bool, JSONProperty("x")]
     y : Annotated[bool, JSONProperty("y")]
     z : Annotated[bool, JSONProperty("z")]
@@ -32,14 +32,14 @@ class Vector_Bool4():
 
 @json_model("byte2")
 @dataclass(slots=True)
-class Vector_Byte2():
+class Byte2():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
 
 
 @json_model("byte3")
 @dataclass(slots=True)
-class Vector_Byte3():
+class Byte3():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -47,7 +47,7 @@ class Vector_Byte3():
 
 @json_model("byte4")
 @dataclass(slots=True)
-class Vector_Byte4():
+class Byte4():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -56,14 +56,14 @@ class Vector_Byte4():
 
 @json_model("sbyte2")
 @dataclass(slots=True)
-class Vector_SByte2():
+class SByte2():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
 
 
 @json_model("sbyte3")
 @dataclass(slots=True)
-class Vector_SByte3():
+class SByte3():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -71,7 +71,7 @@ class Vector_SByte3():
 
 @json_model("sbyte4")
 @dataclass(slots=True)
-class Vector_SByte4():
+class SByte4():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -80,14 +80,14 @@ class Vector_SByte4():
 
 @json_model("ushort2")
 @dataclass(slots=True)
-class Vector_UShort2():
+class UShort2():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
 
 
 @json_model("ushort3")
 @dataclass(slots=True)
-class Vector_UShort3():
+class UShort3():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -95,7 +95,7 @@ class Vector_UShort3():
 
 @json_model("ushort4")
 @dataclass(slots=True)
-class Vector_UShort4():
+class UShort4():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -104,14 +104,14 @@ class Vector_UShort4():
 
 @json_model("short2")
 @dataclass(slots=True)
-class Vector_Short2():
+class Short2():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
 
 
 @json_model("short3")
 @dataclass(slots=True)
-class Vector_Short3():
+class Short3():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -119,7 +119,7 @@ class Vector_Short3():
 
 @json_model("short4")
 @dataclass(slots=True)
-class Vector_Short4():
+class Short4():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -128,14 +128,14 @@ class Vector_Short4():
 
 @json_model("uint2")
 @dataclass(slots=True)
-class Vector_UInt2():
+class UInt2():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
 
 
 @json_model("uint3")
 @dataclass(slots=True)
-class Vector_UInt3():
+class UInt3():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -143,7 +143,7 @@ class Vector_UInt3():
 
 @json_model("uint4")
 @dataclass(slots=True)
-class Vector_UInt4():
+class UInt4():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -152,14 +152,14 @@ class Vector_UInt4():
 
 @json_model("int2")
 @dataclass(slots=True)
-class Vector_Int2():
+class Int2():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
 
 
 @json_model("int3")
 @dataclass(slots=True)
-class Vector_Int3():
+class Int3():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -167,7 +167,7 @@ class Vector_Int3():
 
 @json_model("int4")
 @dataclass(slots=True)
-class Vector_Int4():
+class Int4():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -176,14 +176,14 @@ class Vector_Int4():
 
 @json_model("ulong2")
 @dataclass(slots=True)
-class Vector_ULong2():
+class ULong2():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
 
 
 @json_model("ulong3")
 @dataclass(slots=True)
-class Vector_ULong3():
+class ULong3():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -191,7 +191,7 @@ class Vector_ULong3():
 
 @json_model("ulong4")
 @dataclass(slots=True)
-class Vector_ULong4():
+class ULong4():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -200,14 +200,14 @@ class Vector_ULong4():
 
 @json_model("long2")
 @dataclass(slots=True)
-class Vector_Long2():
+class Long2():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
 
 
 @json_model("long3")
 @dataclass(slots=True)
-class Vector_Long3():
+class Long3():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -215,7 +215,7 @@ class Vector_Long3():
 
 @json_model("long4")
 @dataclass(slots=True)
-class Vector_Long4():
+class Long4():
     x : Annotated[int, JSONProperty("x")]
     y : Annotated[int, JSONProperty("y")]
     z : Annotated[int, JSONProperty("z")]
@@ -224,14 +224,14 @@ class Vector_Long4():
 
 @json_model("float2")
 @dataclass(slots=True)
-class Vector_Float2():
+class Float2():
     x : Annotated[float, JSONProperty("x")]
     y : Annotated[float, JSONProperty("y")]
 
 
 @json_model("float3")
 @dataclass(slots=True)
-class Vector_Float3():
+class Float3():
     x : Annotated[float, JSONProperty("x")]
     y : Annotated[float, JSONProperty("y")]
     z : Annotated[float, JSONProperty("z")]
@@ -239,7 +239,7 @@ class Vector_Float3():
 
 @json_model("float4")
 @dataclass(slots=True)
-class Vector_Float4():
+class Float4():
     x : Annotated[float, JSONProperty("x")]
     y : Annotated[float, JSONProperty("y")]
     z : Annotated[float, JSONProperty("z")]
@@ -248,14 +248,14 @@ class Vector_Float4():
 
 @json_model("double2")
 @dataclass(slots=True)
-class Vector_Double2():
+class Double2():
     x : Annotated[float, JSONProperty("x")]
     y : Annotated[float, JSONProperty("y")]
 
 
 @json_model("double3")
 @dataclass(slots=True)
-class Vector_Double3():
+class Double3():
     x : Annotated[float, JSONProperty("x")]
     y : Annotated[float, JSONProperty("y")]
     z : Annotated[float, JSONProperty("z")]
@@ -263,7 +263,7 @@ class Vector_Double3():
 
 @json_model("double4")
 @dataclass(slots=True)
-class Vector_Double4():
+class Double4():
     x : Annotated[float, JSONProperty("x")]
     y : Annotated[float, JSONProperty("y")]
     z : Annotated[float, JSONProperty("z")]

@@ -17,6 +17,12 @@ vector_types = [
 ]
 
 
+quaternion_types = [
+    "float",
+    "double"
+]
+
+
 matrix_types = [
     "float",
     "double"

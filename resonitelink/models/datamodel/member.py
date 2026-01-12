@@ -6,4 +6,4 @@ from abc import ABC
 
 @dataclass(slots=True)
 class Member(ABC):
-    member_id : Annotated[str, JSONProperty("id")] = MISSING
+    id : Annotated[str, JSONProperty("id")] = MISSING

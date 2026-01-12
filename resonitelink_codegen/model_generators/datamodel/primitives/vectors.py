@@ -42,10 +42,10 @@ class VectorsGenerator(CodeGenerator):
         for vector_type in vector_types:
             type_info = type_mappings[vector_type]
 
-            yield from _generate_vector_class(f"{vector_type}2", f"Vector_{type_info.type_name}2", type_info.type, ["x", "y"])
+            yield from _generate_vector_class(f"{vector_type}2", f"{type_info.type_name}2", type_info.type, ["x", "y"])
             yield f"\n\n"
-            yield from _generate_vector_class(f"{vector_type}3", f"Vector_{type_info.type_name}3", type_info.type, ["x", "y", "z"])
+            yield from _generate_vector_class(f"{vector_type}3", f"{type_info.type_name}3", type_info.type, ["x", "y", "z"])
             yield f"\n\n"
-            yield from _generate_vector_class(f"{vector_type}4", f"Vector_{type_info.type_name}4", type_info.type, ["x", "y", "z", "w"])
+            yield from _generate_vector_class(f"{vector_type}4", f"{type_info.type_name}4", type_info.type, ["x", "y", "z", "w"])
             if vector_types.index(vector_type) < len(vector_types) - 1:
                 yield f"\n\n"
