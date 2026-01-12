@@ -22,7 +22,11 @@ async def on_client_started(client : ResoniteLinkClient):
     msg = AddSlot(data=Slot(id=new_slot_id, parent=Slot.Root))
     await client.send_message(msg)
 
-    for component_type in [ "[FrooxEngine]FrooxEngine.ValueField<bool>", "[FrooxEngine]FrooxEngine.ValueField<int>", "[FrooxEngine]FrooxEngine.ValueField<string>" ]:
+    for component_type in [ 
+        "[FrooxEngine]FrooxEngine.ValueField<bool>", 
+        "[FrooxEngine]FrooxEngine.ValueField<int>", 
+        "[FrooxEngine]FrooxEngine.ValueField<string>" 
+    ]:
         msg = AddComponent(container_slot_id=new_slot_id, data=Component(component_type=component_type))
         await client.send_message(msg)
 

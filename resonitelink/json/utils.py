@@ -1,4 +1,4 @@
-from .models import JSONModel
+from .models import JSONModel, JSONPropertyType
 from typing import Any, List
 
 __all__ = (
@@ -87,7 +87,20 @@ def format_object_structure(obj : Any, print_missing : bool = False, prefix : st
         for key, json_property in model.properties.items():
             if hasattr(obj, key):
                 # Value for key present
-                property_lines.append(f" - {key}: {format_object_structure(getattr(obj, key), prefix=f"{prefix}   ")}")
+                val = getattr(obj, key)
+
+                if json_property.property_type == JSONPropertyType.LIST and isinstance(val, list):
+                    # Resolve property as list
+                    property_lines.append(f" - {key} (List):\n       - {'\n       - '.join([ format_object_structure(v, prefix=f'{prefix}      ') for v in val ])}")
+
+                elif json_property.property_type == JSONPropertyType.DICT and isinstance(val, dict):
+                    # Resolve property as dict
+                    # TODO: Don't have a dict to test it right now, should work tho
+                    property_lines.append(f" - {key} (Dict):\n       - {'\n       - '.join([ f'{k}: {format_object_structure(v, prefix=f'{prefix}      ')}' for k, v in val.items() ])}")
+                
+                else:
+                    # Resolve property as single element
+                    property_lines.append(f" - {key}: {format_object_structure(val, prefix=f"{prefix}   ")}")
             
             elif print_missing:
                 # Value for key missing & missing values should be printed
