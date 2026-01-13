@@ -36,7 +36,7 @@ class QuaternionsGenerator(CodeGenerator):
         yield f"\n\n"
 
         def _generate_quaternion_class(model_name : str, class_name : str, element_type : Type):
-            yield f"@json_model(\"{model_name}\")\n"
+            yield f"@json_model(\"t_{model_name}\")\n"
             yield f"@dataclass(slots=True)\n"
             yield f"class {class_name}():\n"
             yield f"    x : Annotated[{element_type.__name__}, JSONProperty(\"x\")] = MISSING\n"

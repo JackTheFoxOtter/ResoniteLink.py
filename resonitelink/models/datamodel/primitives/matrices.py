@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Annotated
 
 
-@json_model("float2x2")
+@json_model("t_float2x2")
 @dataclass(slots=True)
 class Float2x2():
     m00 : Annotated[float, JSONProperty("m00")] = MISSING
@@ -15,7 +15,7 @@ class Float2x2():
     m11 : Annotated[float, JSONProperty("m11")] = MISSING
 
 
-@json_model("float3x3")
+@json_model("t_float3x3")
 @dataclass(slots=True)
 class Float3x3():
     m00 : Annotated[float, JSONProperty("m00")] = MISSING
@@ -29,7 +29,7 @@ class Float3x3():
     m22 : Annotated[float, JSONProperty("m22")] = MISSING
 
 
-@json_model("float4x4")
+@json_model("t_float4x4")
 @dataclass(slots=True)
 class Float4x4():
     m00 : Annotated[float, JSONProperty("m00")] = MISSING
@@ -50,7 +50,7 @@ class Float4x4():
     m33 : Annotated[float, JSONProperty("m33")] = MISSING
 
 
-@json_model("double2x2")
+@json_model("t_double2x2")
 @dataclass(slots=True)
 class Double2x2():
     m00 : Annotated[float, JSONProperty("m00")] = MISSING
@@ -59,7 +59,7 @@ class Double2x2():
     m11 : Annotated[float, JSONProperty("m11")] = MISSING
 
 
-@json_model("double3x3")
+@json_model("t_double3x3")
 @dataclass(slots=True)
 class Double3x3():
     m00 : Annotated[float, JSONProperty("m00")] = MISSING
@@ -73,7 +73,7 @@ class Double3x3():
     m22 : Annotated[float, JSONProperty("m22")] = MISSING
 
 
-@json_model("double4x4")
+@json_model("t_double4x4")
 @dataclass(slots=True)
 class Double4x4():
     m00 : Annotated[float, JSONProperty("m00")] = MISSING

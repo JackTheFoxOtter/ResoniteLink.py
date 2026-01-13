@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Annotated
 
 
-@json_model("floatQ")
+@json_model("t_floatQ")
 @dataclass(slots=True)
 class FloatQ():
     x : Annotated[float, JSONProperty("x")] = MISSING
@@ -15,7 +15,7 @@ class FloatQ():
     w : Annotated[float, JSONProperty("w")] = MISSING
 
 
-@json_model("doubleQ")
+@json_model("t_doubleQ")
 @dataclass(slots=True)
 class DoubleQ():
     x : Annotated[float, JSONProperty("x")] = MISSING

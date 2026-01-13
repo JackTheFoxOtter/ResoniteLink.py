@@ -9,17 +9,17 @@ from typing import Annotated, List
 @dataclass(slots=False)
 class Slot(Worker):
     parent : Annotated[Reference, JSONProperty("parent", model_type_name="reference")] = MISSING
-    position : Annotated[Field_Float3, JSONProperty("position", model_type_name="field_float3")] = MISSING
-    rotation : Annotated[Field_FloatQ, JSONProperty("rotation", model_type_name="field_floatQ")] = MISSING
-    scale : Annotated[Field_Float3, JSONProperty("scale", model_type_name="field_float3")] = MISSING
-    is_active : Annotated[Field_Bool, JSONProperty("isActive", model_type_name="field_bool")] = MISSING
-    is_persistent : Annotated[Field_Bool, JSONProperty("isPersistent", model_type_name="field_bool")] = MISSING
-    name : Annotated[Field_String, JSONProperty("name", model_type_name="field_string")] = MISSING
-    tag : Annotated[Field_String, JSONProperty("tag", model_type_name="field_string")] = MISSING
-    order_offset : Annotated[Field_Long, JSONProperty("orderOffset", model_type_name="field_long")] = MISSING
+    position : Annotated[Field_Float3, JSONProperty("position", model_type_name="float3")] = MISSING
+    rotation : Annotated[Field_FloatQ, JSONProperty("rotation", model_type_name="floatQ")] = MISSING
+    scale : Annotated[Field_Float3, JSONProperty("scale", model_type_name="float3")] = MISSING
+    is_active : Annotated[Field_Bool, JSONProperty("isActive", model_type_name="bool")] = MISSING
+    is_persistent : Annotated[Field_Bool, JSONProperty("isPersistent", model_type_name="bool")] = MISSING
+    name : Annotated[Field_String, JSONProperty("name", model_type_name="string")] = MISSING
+    tag : Annotated[Field_String, JSONProperty("tag", model_type_name="string")] = MISSING
+    order_offset : Annotated[Field_Long, JSONProperty("orderOffset", model_type_name="long")] = MISSING
 
     components : Annotated[List[Component], JSONProperty("components", model_type_name="component", property_type=JSONPropertyType.LIST)] = MISSING
-    # children : Annotated[List[Slot], JSONProperty("children", model_type_name="slot", property_type=JSONPropertyType.LIST)] = MISSING
+    children : Annotated[List['Slot'], JSONProperty("children", model_type_name="slot", property_type=JSONPropertyType.LIST)] = MISSING
 
     # Special Slot references
     Root = Reference(target_id="Root", target_type="slot")

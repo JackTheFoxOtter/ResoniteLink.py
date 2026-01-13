@@ -79,7 +79,7 @@ def format_object_structure(obj : Any, print_missing : bool = False, prefix : st
     
     except KeyError:
         # Not a model
-        structure_str = f"Type {type(obj)}: {obj}"
+        structure_str = f"Type '{type(obj).__name__}': {obj}"
     
     else:
         # Model class, resolve children
@@ -91,12 +91,11 @@ def format_object_structure(obj : Any, print_missing : bool = False, prefix : st
 
                 if json_property.property_type == JSONPropertyType.LIST and isinstance(val, list):
                     # Resolve property as list
-                    property_lines.append(f" - {key} (List):\n       - {'\n       - '.join([ format_object_structure(v, prefix=f'{prefix}      ') for v in val ])}")
+                    property_lines.append(f" - {key} (List):\n{prefix}    - {f'\n{prefix}    - '.join([ format_object_structure(v, prefix=f'{prefix}      ') for v in val ])}")
 
                 elif json_property.property_type == JSONPropertyType.DICT and isinstance(val, dict):
                     # Resolve property as dict
-                    # TODO: Don't have a dict to test it right now, should work tho
-                    property_lines.append(f" - {key} (Dict):\n       - {'\n       - '.join([ f'{k}: {format_object_structure(v, prefix=f'{prefix}      ')}' for k, v in val.items() ])}")
+                    property_lines.append(f" - {key} (Dict):\n{prefix}    - {f'\n{prefix}    - '.join([ f'{k}: {format_object_structure(v, prefix=f'{prefix}      ')}' for k, v in val.items() ])}")
                 
                 else:
                     # Resolve property as single element
@@ -106,6 +105,6 @@ def format_object_structure(obj : Any, print_missing : bool = False, prefix : st
                 # Value for key missing & missing values should be printed
                 property_lines.append(f"{key}: MISSING")
         
-        structure_str = f"Type {type(obj)} (Data class for model '{model.type_name}'):\n{prefix}{f'\n{prefix}'.join(property_lines)}"
+        structure_str = f"Type '{type(obj).__name__}' (Data class for model '{model.type_name}'):\n{prefix}{f'\n{prefix}'.join(property_lines)}"
 
     return structure_str

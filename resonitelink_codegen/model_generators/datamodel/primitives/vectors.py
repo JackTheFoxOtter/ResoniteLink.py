@@ -34,7 +34,7 @@ class VectorsGenerator(CodeGenerator):
         yield f"\n\n"
 
         def _generate_vector_class(model_name : str, class_name : str, element_type : Type, element_names : List[str]):
-            yield f"@json_model(\"{model_name}\")\n"
+            yield f"@json_model(\"t_{model_name}\")\n"
             yield f"@dataclass(slots=True)\n"
             yield f"class {class_name}():\n"
             for element_name in element_names:

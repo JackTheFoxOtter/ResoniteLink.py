@@ -44,11 +44,7 @@ class ResoniteLinkJSONDecoder(JSONDecoder):
             
             else:
                 # Model exists!
-                if obj is None:
-                    # Object not provided, that's okay, but nothing to do!
-                    pass # TODO this isn't nice! We should skip the object entirely.
-
-                elif isinstance(obj, child_model.data_class):
+                if isinstance(obj, child_model.data_class):
                     # Already the target type, nothing to do!
                     pass
                 
@@ -83,7 +79,11 @@ class ResoniteLinkJSONDecoder(JSONDecoder):
         - The original object in case no further transformation is necessary.
 
         """
-        if json_property.property_type == JSONPropertyType.ELEMENT:
+        if obj is None:
+            # Object not provided, that's okay, but nothing to do!
+            pass # TODO this isn't nice! We should skip the object entirely.
+        
+        elif json_property.property_type == JSONPropertyType.ELEMENT:
             # Resolve property as single element
             obj = ResoniteLinkJSONDecoder._decode_element(obj, json_property)
         

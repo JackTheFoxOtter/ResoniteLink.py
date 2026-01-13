@@ -137,7 +137,7 @@ for primitive_type in primitive_types:
 
     try:
         # Try get the model for this primitive type
-        model = JSONModel.get_for_type_name(primitive_type)
+        model = JSONModel.get_for_type_name(f"t_{primitive_type}")
 
     except KeyError:
         # Model not found!

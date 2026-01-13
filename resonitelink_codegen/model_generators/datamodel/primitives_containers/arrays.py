@@ -58,6 +58,6 @@ class ArraysGenerator(CodeGenerator):
         for primitive_type in primitive_types:
             type_info = type_mappings[primitive_type]
 
-            yield from _generate_array_class(f"array_{primitive_type}", f"Array_{type_info.type_name}", type_info.type, primitive_type, type_info.model_type_name)
+            yield from _generate_array_class(f"{primitive_type}[]", f"Array_{type_info.type_name}", type_info.type, primitive_type, type_info.model_type_name)
             if primitive_types.index(primitive_type) < len(primitive_types) - 1:
                 yield f"\n\n"
