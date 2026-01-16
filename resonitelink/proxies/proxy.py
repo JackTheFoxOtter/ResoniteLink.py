@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     # Only for type hints, prevents circular import
-    from resonitelink import AbstractResoniteLinkClient
+    from resonitelink import ResoniteLinkClient
 
 from resonitelink.models.datamodel import Member, Worker
 from typing import TypeVar, Generic, Union, Optional
@@ -18,19 +18,19 @@ class Proxy(Generic[TData], ABC):
     Proxies are always in the context of a client.
     
     """
-    _client : AbstractResoniteLinkClient
+    _client : ResoniteLinkClient
     _id : str
     _data : Optional[TData]
 
     @property
-    def client(self) -> AbstractResoniteLinkClient:
+    def client(self) -> ResoniteLinkClient:
         return self._client
     
     @property
     def id(self) -> str:
         return self._id
 
-    def __init__(self, client : AbstractResoniteLinkClient, id : str, data : Optional[TData] = None):
+    def __init__(self, client : ResoniteLinkClient, id : str, data : Optional[TData] = None):
         self._client = client
         self._id = id
         self._data = data

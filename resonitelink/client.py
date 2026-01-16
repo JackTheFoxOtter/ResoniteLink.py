@@ -1,13 +1,13 @@
 from __future__ import annotations # Delayed evaluation of type hints (PEP 563)
 
-from resonitelink.models.responses import Response, SlotData
+from resonitelink.models.responses import Response, SessionData, SlotData 
 from resonitelink.models.datamodel import Reference, Slot, Float3, FloatQ, Field_Bool, Field_Long, Field_Float3, Field_FloatQ, Field_String
-from resonitelink.models.messages import Message, BinaryPayloadMessage, GetSlot, AddSlot, UpdateSlot, RemoveSlot
+from resonitelink.models.messages import Message, BinaryPayloadMessage, RequestSessionData, GetSlot, AddSlot, UpdateSlot, RemoveSlot
 from resonitelink.exceptions import ResoniteLinkException
 from resonitelink.proxies import SlotProxy
 from websockets.exceptions import ConnectionClosed as WebSocketConnectionClosed
 from resonitelink.utils import IDRegistry, get_slot_id, optional_slot_reference, optional_field
-from resonitelink.json import MISSING, is_missing, optional, ResoniteLinkJSONDecoder, ResoniteLinkJSONEncoder, format_object_structure
+from resonitelink.json import MISSING, ResoniteLinkJSONDecoder, ResoniteLinkJSONEncoder, format_object_structure
 from websockets import connect as websocket_connect, ClientConnection as WebSocketClientConnection
 from asyncio import AbstractEventLoop, Event, Future, get_running_loop, wait_for, gather
 from typing import Optional, Union, List, Dict, Callable, Coroutine, Any
@@ -26,16 +26,29 @@ class ResoniteLinkClientEvent(Enum):
     MESSAGE_RECEIVED=5
 
 
-class AbstractResoniteLinkClient(ABC):
+class ResoniteLinkClient(ABC):
     """
     Abstract base class for all ResoniteLink-Clients.
 
     """
+    _on_starting : Event
+    _on_started : Event
+    _on_stopping : Event
+    _on_stopped : Event
+    _event_handlers : Dict[ResoniteLinkClientEvent, List[Callable[[ResoniteLinkClient], Coroutine]]]
+    _message_ids : IDRegistry[Future[Response]]
     _datamodel_ids : IDRegistry
 
     def __init__(self, logger : Optional[logging.Logger] = None, log_level : int = logging.INFO):
         """
         Base constructur of ResoniteLinkClient instance.
+
+        Parameters
+        ----------
+        logger : Logger, optional
+            If provided, this logger will be used instead of the default 'ResoniteLinkClient' logger.
+        log_level : int, default = logging.INFO
+            The log level to use for the default 'ResoniteLinkClient'. Only has an effect if no override logger is provided.
 
         """
         if logger:
@@ -43,11 +56,50 @@ class AbstractResoniteLinkClient(ABC):
         else:
             self._logger = logging.getLogger("ResoniteLinkClient")
             self._logger.setLevel(log_level)
+        self._on_starting = Event()
+        self._on_started = Event()
+        self._on_stopping = Event()
+        self._on_stopped = Event()
+        self._event_handlers = { }
+        self._message_ids = IDRegistry()
         self._datamodel_ids = IDRegistry()
 
-    @abstractmethod
-    async def send_message(self, message : Message) -> Response:
-        raise NotImplementedError()
+    def register_event_handler(self, event : ResoniteLinkClientEvent, handler : Callable[[ResoniteLinkClient], Coroutine]):
+        """
+        Registers a new event handler to be invoked when the specified client event occurs.
+
+        """
+        handlers = self._event_handlers.setdefault(event, [ ])
+        handlers.append(handler)
+        
+        self._logger.debug(f"Updated event handlers: {self._event_handlers}")
+    
+    async def _invoke_event_handlers(self, event : ResoniteLinkClientEvent, *args, **kwargs):
+        """
+        Invokes all registered event handlers for the given event. 
+
+        """
+        handlers = self._event_handlers.setdefault(event, [ ])
+
+        self._logger.debug(f"Invoking {len(handlers)} event handlers for event {event}")
+
+        await gather(*[ handler(self, *args, **kwargs) for handler in handlers ])
+    
+    async def request_session_data(self) -> SessionData:
+        """
+        Requests the session data of the current ResoniteLink connection.
+
+        Returns
+        -------
+        A `SessionData` instance containing the requested data.
+
+        """
+        msg = RequestSessionData()
+        response = await self.send_message(msg)
+        if not isinstance(response, SessionData):
+            raise RuntimeError(f"Unexpected response type for message `RequestSessionData`: `{type(response)}` (Expected: `SessionData`)")
+        
+        return response
     
     async def get_slot(
         self, 
@@ -217,27 +269,92 @@ class AbstractResoniteLinkClient(ABC):
         slot_id = get_slot_id(slot)
         msg = RemoveSlot(slot_id=slot_id)
         await self.send_message(msg)
+    
+    async def send_message(self, message : Message) -> Response:
+        """
+        Sends a message to the server.
+
+        """
+        # Create an ID for this message and link it to a new future.
+        message_future : Future[Response] = get_running_loop().create_future()
+        message_id = self._message_ids.generate_id(message_future)
+        message.message_id = message_id
+
+        # Encodes the message object and sends it as text.
+        raw_message = json.dumps(message, cls=ResoniteLinkJSONEncoder)
+        await self._send_raw_message(raw_message, text=True)
+
+        if isinstance(message, BinaryPayloadMessage):
+            # The message also has a binary payload that we need to send.
+            await self._send_raw_message(message.raw_binary_payload, text=False)
+        
+        # Invoke message sent event BEFORE waiting for message's future
+        await self._invoke_event_handlers(ResoniteLinkClientEvent.MESSAGE_SENT, message)
+        
+        # Waits for the message's future. Will complete when the response is received, of abort after timeout.
+        return await wait_for(message_future, timeout=60)
+    
+    async def _process_message(self, message_bytes : bytes):
+        """
+        Called when a message was received via the connected websocket.
+        
+        Parameters
+        ----------
+        message : bytes
+            The received message to process
+
+        """
+        self._logger.debug(f"Received raw message: {message_bytes.decode('utf-8')}")
+        
+        # Decode message into object
+        message : Any = json.loads(message_bytes, cls=ResoniteLinkJSONDecoder)
+        self._logger.debug(f"Received message:\n   {'\n   '.join(format_object_structure(message, print_missing=True).split('\n'))}")
+        
+        # Currently nothing other than `Response` instances and derivatives thereof are expected to be received from ResoniteLink.
+        if not isinstance(message, Response):
+            raise RuntimeError("Received message did not decode into `Response` instance!")
+        response = message
+
+        # We're only expecting responses that we sent, so they should always have a `source_message_id`!
+        if not response.source_message_id:
+            raise RuntimeError(f"Received response did not include a `source_message_id`!")
+
+        try:
+            source_message_future = self._message_ids.pop_id_value(response.source_message_id)
+        except KeyError:
+            # ID unknown or ID value already requested
+            raise RuntimeError(f"Received response's `source_message_id` could not get resolved to source message's future!")
+
+        # Invoke message sent event BEFORE responding to message's future
+        await self._invoke_event_handlers(ResoniteLinkClientEvent.MESSAGE_RECEIVED, message)
+
+        # Responds to the future, this will continue the original message sent
+        if response.success:
+            source_message_future.set_result(response)
+        else:
+            source_message_future.set_exception(ResoniteLinkException(response))
+
+    @abstractmethod
+    async def _send_raw_message(self, message : Union[bytes, str], text : bool = True):
+        """
+        Send a raw message (bytes or str) to the server.
+        Needs to be implemented by implementation.
+
+        """
+        raise NotImplementedError()
 
 
-class ResoniteLinkWebsocketClient(AbstractResoniteLinkClient):
+class ResoniteLinkWebsocketClient(ResoniteLinkClient):
     """
     Client to connect to the ResoniteLink API via WebSocket.
 
     """
-    _logger : logging.Logger
-    _on_starting : Event
-    _on_started : Event
-    _on_stopping : Event
-    _on_stopped : Event
-    _event_handlers : Dict[ResoniteLinkClientEvent, List[Callable[[ResoniteLinkWebsocketClient], Coroutine]]]
-    _message_ids : IDRegistry[Future[Response]]
-    _loop : AbstractEventLoop
     _ws_uri : str
     _ws : WebSocketClientConnection
 
     def __init__(self, logger : Optional[logging.Logger] = None, log_level : int = logging.INFO):
         """
-        Creates a new ResoniteLinkClient instance.
+        Creates a new ResoniteLinkWebsocketClient instance.
 
         Parameters
         ----------
@@ -248,33 +365,6 @@ class ResoniteLinkWebsocketClient(AbstractResoniteLinkClient):
 
         """
         super().__init__(logger=logger, log_level=log_level)
-        self._on_starting = Event()
-        self._on_started = Event()
-        self._on_stopping = Event()
-        self._on_stopped = Event()
-        self._message_ids = IDRegistry()
-        self._event_handlers = { }
-
-    def register_event_handler(self, event : ResoniteLinkClientEvent, handler : Callable[[ResoniteLinkWebsocketClient], Coroutine]):
-        """
-        Registers a new event handler to be invoked when the specified client event occurs.
-
-        """
-        handlers = self._event_handlers.setdefault(event, [ ])
-        handlers.append(handler)
-        
-        self._logger.debug(f"Updated event handlers: {self._event_handlers}")
-    
-    async def _invoke_event_handlers(self, event : ResoniteLinkClientEvent, *args, **kwargs):
-        """
-        Invokes all registered event handlers for the given event. 
-
-        """
-        handlers = self._event_handlers.setdefault(event, [ ])
-
-        self._logger.debug(f"Invoking {len(handlers)} event handlers for event {event}")
-
-        await gather(*[ handler(self, *args, **kwargs) for handler in handlers ])
     
     async def start(self, port : int):
         """
@@ -293,15 +383,12 @@ class ResoniteLinkWebsocketClient(AbstractResoniteLinkClient):
         if self._on_starting.is_set(): 
             raise Exception("Client is already starting!")
         
-        # Get the currently running loop. This will raise a RuntimeError if there is none.
-        self._loop = get_running_loop()
-
         self._logger.debug(f"Starting client on port {port}...")
         self._on_starting.set()
         await self._invoke_event_handlers(ResoniteLinkClientEvent.STARTING)
 
         # Create the task that starts fetching for websocket messages once the websocket client connects
-        self._loop.create_task(self._fetch_loop())
+        get_running_loop().create_task(self._fetch_loop())
         
         # Connects the websocket client to the specified port
         self._ws_uri : str = f"ws://localhost:{port}/"
@@ -353,46 +440,6 @@ class ResoniteLinkWebsocketClient(AbstractResoniteLinkClient):
                 self._on_stopped.set()
         
         self._logger.info(f"Stopped listening to messages.")
-    
-    async def _process_message(self, message_bytes : bytes):
-        """
-        Called when a message was received via the connected websocket.
-        
-        Parameters
-        ----------
-        message : bytes
-            The received message to process
-
-        """
-        self._logger.debug(f"Received raw message: {message_bytes.decode('utf-8')}")
-        
-        # Decode message into object
-        message : Any = json.loads(message_bytes, cls=ResoniteLinkJSONDecoder)
-        self._logger.debug(f"Received message:\n   {'\n   '.join(format_object_structure(message, print_missing=True).split('\n'))}")
-        
-        # Currently nothing other than `Response` instances and derivatives thereof are expected to be received from ResoniteLink.
-        if not isinstance(message, Response):
-            raise RuntimeError("Received message did not decode into `Response` instance!")
-        response = message
-
-        # We're only expecting responses that we sent, so they should always have a `source_message_id`!
-        if not response.source_message_id:
-            raise RuntimeError(f"Received response did not include a `source_message_id`!")
-
-        try:
-            source_message_future = self._message_ids.pop_id_value(response.source_message_id)
-        except KeyError:
-            # ID unknown or ID value already requested
-            raise RuntimeError(f"Received response's `source_message_id` could not get resolved to source message's future!")
-
-        # Invoke message sent event BEFORE responding to message's future
-        await self._invoke_event_handlers(ResoniteLinkClientEvent.MESSAGE_RECEIVED, message)
-
-        # Responds to the future, this will continue the original message sent
-        if response.success:
-            source_message_future.set_result(response)
-        else:
-            source_message_future.set_exception(ResoniteLinkException(response))
 
     async def _send_raw_message(self, message : Union[bytes, str], text : bool = True):
         """
@@ -407,27 +454,3 @@ class ResoniteLinkWebsocketClient(AbstractResoniteLinkClient):
             self._logger.debug(f"Sending text message: {message}")
         
         await self._ws.send(message, text=text)
-    
-    async def send_message(self, message : Message) -> Response:
-        """
-        Sends a message to the server.
-
-        """
-        # Create an ID for this message and link it to a new future.
-        message_future : Future[Response] = self._loop.create_future()
-        message_id = self._message_ids.generate_id(message_future)
-        message.message_id = message_id
-
-        # Encodes the message object and sends it as text.
-        raw_message = json.dumps(message, cls=ResoniteLinkJSONEncoder)
-        await self._send_raw_message(raw_message, text=True)
-
-        if isinstance(message, BinaryPayloadMessage):
-            # The message also has a binary payload that we need to send.
-            await self._send_raw_message(message.raw_binary_payload, text=False)
-        
-        # Invoke message sent event BEFORE waiting for message's future
-        await self._invoke_event_handlers(ResoniteLinkClientEvent.MESSAGE_SENT, message)
-        
-        # Waits for the message's future. Will complete when the response is received, of abort after timeout.
-        return await wait_for(message_future, timeout=60)

@@ -1,7 +1,7 @@
 import logging
 logging.basicConfig(format='%(asctime)s [%(levelname)-8s] %(name)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
-from resonitelink import ResoniteLinkWebsocketClient, ResoniteLinkClientEvent
+from resonitelink import ResoniteLinkClient, ResoniteLinkWebsocketClient, ResoniteLinkClientEvent
 from resonitelink.json import ResoniteLinkJSONEncoder, ResoniteLinkJSONDecoder, format_object_structure
 from resonitelink.models.datamodel import Slot, Component, Reference, Field, Field_String
 from resonitelink.models.messages import RemoveSlot, GetSlot, AddSlot, AddComponent, ImportTexture2DRawData, RequestSessionData
@@ -31,9 +31,7 @@ def test_generate_image_bytes() -> bytes:
     return bytes(data)
 
 
-async def on_client_started(client : ResoniteLinkWebsocketClient):
-    new_slot_id = f"RLPY_{randint(10000000, 99999999)}"
-
+async def on_client_started(client : ResoniteLinkClient):
     # msg = RequestSessionData()
     # await client.send_message(msg)
 
