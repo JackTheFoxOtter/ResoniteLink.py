@@ -1,12 +1,13 @@
 from __future__ import annotations # Delayed evaluation of type hints (PEP 563)
 
 from resonitelink.models.responses import Response, SlotData
-from resonitelink.models.datamodel import Slot
-from resonitelink.models.messages import Message, BinaryPayloadMessage, AddSlot, GetSlot
+from resonitelink.models.datamodel import Reference, Slot, Float3, FloatQ, Field_Bool, Field_Long, Field_Float3, Field_FloatQ, Field_String
+from resonitelink.models.messages import Message, BinaryPayloadMessage, GetSlot, AddSlot, UpdateSlot, RemoveSlot
+from resonitelink.exceptions import ResoniteLinkException
 from resonitelink.proxies import SlotProxy
 from websockets.exceptions import ConnectionClosed as WebSocketConnectionClosed
-from resonitelink.utils import IDRegistry
-from resonitelink.json import ResoniteLinkJSONDecoder, ResoniteLinkJSONEncoder, format_object_structure
+from resonitelink.utils import IDRegistry, get_slot_id, optional_slot_reference, optional_field
+from resonitelink.json import MISSING, is_missing, optional, ResoniteLinkJSONDecoder, ResoniteLinkJSONEncoder, format_object_structure
 from websockets import connect as websocket_connect, ClientConnection as WebSocketClientConnection
 from asyncio import AbstractEventLoop, Event, Future, get_running_loop, wait_for, gather
 from typing import Optional, Union, List, Dict, Callable, Coroutine, Any
@@ -43,31 +44,180 @@ class AbstractResoniteLinkClient(ABC):
     async def send_message(self, message : Message) -> Response:
         raise NotImplementedError()
     
-    async def fetch_slot(self, slot_id : str, depth : int = -1, include_component_data : bool = False) -> Slot:
+    async def get_slot(
+        self, 
+        slot : Union[str, Slot, SlotProxy, Reference], 
+        depth : int = 0, 
+        include_component_data : bool = False
+    ) -> Slot:
         """
         Fetches a slot from ResoniteLink.
 
+        Parameters
+        ----------
+        slot : Union[str, Slot, SlotProxy, Reference]
+            Unique ID or reference of the slot we're requesting data for. 
+            Special case: "Root" will fetch the root slot of the world.
+        depth : int, default = 0
+            How deep to fetch the hierarchy. Value of 0 will fetch only the requested slot fully. 
+            Value of 1 will fully fetch the immediate children. Value of -1 will fetch everything fully. 
+            Any immediate children of slots beyond this depth will be fetched as references only.
+        include_component_data : bool, default = False
+            Indicates if components should be fetched fully with all their data or only as references. 
+            Set to False if you plan on fetching the individual component data later.
+        
+        Returns
+        -------
+        An instance of the `Slot` data class containing the requested data.
+
         """
-        msg = GetSlot(slot_id=slot_id, depth=depth, include_component_data=include_component_data)
+        slot_id = get_slot_id(slot)
+        msg = GetSlot(
+            slot_id = slot_id, 
+            depth=depth, 
+            include_component_data = include_component_data
+        )
         response = await self.send_message(msg)
         if not isinstance(response, SlotData):
             raise RuntimeError(f"Unexpected response type for message `GetSlot`: `{type(response)}` (Expected: `SlotData`)")
         
         return response.data
     
-    async def add_slot(self, *args, parent=Slot.Root, **kwargs) -> SlotProxy:
+    async def add_slot(
+        self, 
+        return_proxy : bool = True,
+        parent : Union[str, Slot, SlotProxy, Reference] = Slot.Root, 
+        position : Float3 = MISSING,
+        rotation : FloatQ = MISSING,
+        scale : Float3 = MISSING,
+        is_active : bool = MISSING,
+        is_persistent : bool = MISSING,
+        name : str = MISSING,
+        tag : str = MISSING,
+        order_offset : int = MISSING
+    ) -> Union[SlotProxy, str]:
         """
         Creates a new slot with the provided arguments.
 
+        Parameters
+        ----------
+        return_proxy : bool, default = True
+            Wether to return a proxy instance.
+            If set to `False`, the slot's ID will be returned as a string.
+        parent : Union[str, Slot, SlotProxy, Reference]
+            Unique ID or reference to the parent slot this slot should be added under.
+        position : Float3, optional
+            Local position of the slot.
+        rotation : FloatQ, optional
+            Local rotation of the slot.
+        scale : Float3, optional
+            Local scale of the slot.
+        is_active : bool, optional
+            Active state of the slot.
+        is_persistent : bool, optional
+            Persistent state of the slot.
+        name : str, optional
+            Name of the slot.
+        tag : str, optional
+            Tag of the slot.
+        order_offset : int, optional
+            Order offset of the slot.
+
         Returns
         -------
-        Proxy object for the newly created slot.
+        If `return_proxy` is `True`, a `SlotProxy` instance for the newly created slot will be returned.
+        Otherwise the slot's ID is returned as a `str`.
 
         """
         slot_id = self._datamodel_ids.generate_id()
-        msg = AddSlot(data=Slot(slot_id, *args, parent=parent, **kwargs))
+        msg = AddSlot(data=Slot(
+            id = slot_id, 
+            parent = Reference(get_slot_id(parent), target_type="[FrooxEngine]FrooxEngine.Slot"),
+            position = optional_field(position, Field_Float3),
+            rotation = optional_field(rotation, Field_FloatQ),
+            scale = optional_field(scale, Field_Float3),
+            is_active = optional_field(is_active, Field_Bool),
+            is_persistent = optional_field(is_persistent, Field_Bool),
+            name = optional_field(name, Field_String),
+            tag = optional_field(tag, Field_String),
+            order_offset = optional_field(order_offset, Field_Long)
+        ))
         await self.send_message(msg)
-        return SlotProxy(self, slot_id)
+        
+        if return_proxy:
+            return SlotProxy(self, slot_id)
+        else:
+            return slot_id
+    
+    async def update_slot(
+        self, 
+        slot : Union[str, Slot, SlotProxy, Reference],
+        parent : Union[str, Slot, SlotProxy, Reference] = MISSING, 
+        position : Float3 = MISSING,
+        rotation : FloatQ = MISSING,
+        scale : Float3 = MISSING,
+        is_active : bool = MISSING,
+        is_persistent : bool = MISSING,
+        name : str = MISSING,
+        tag : str = MISSING,
+        order_offset : int = MISSING
+    ):
+        """
+        Updates a slot with the provided fields.
+        Any field that isn't provided will be left as is.
+
+        Parameters
+        ----------
+        slot : Union[str, Slot, SlotProxy, Reference]
+            Unique ID or reference of the slot to update.
+        parent : Union[str, Slot, SlotProxy, Reference], optional
+            Unique ID or reference to the parent slot this slot should be added under.
+        position : Float3, optional
+            Local position of the slot.
+        rotation : FloatQ, optional
+            Local rotation of the slot.
+        scale : Float3, optional
+            Local scale of the slot.
+        is_active : bool, optional
+            Active state of the slot.
+        is_persistent : bool, optional
+            Persistent state of the slot.
+        name : str, optional
+            Name of the slot.
+        tag : str, optional
+            Tag of the slot.
+        order_offset : int, optional
+            Order offset of the slot.
+
+        """
+        slot_id = get_slot_id(slot)
+        msg = UpdateSlot(data=Slot(
+            id = slot_id, 
+            parent = optional_slot_reference(parent),
+            position = optional_field(position, Field_Float3),
+            rotation = optional_field(rotation, Field_FloatQ),
+            scale = optional_field(scale, Field_Float3),
+            is_active = optional_field(is_active, Field_Bool),
+            is_persistent = optional_field(is_persistent, Field_Bool),
+            name = optional_field(name, Field_String),
+            tag = optional_field(tag, Field_String),
+            order_offset = optional_field(order_offset, Field_Long)
+        ))
+        await self.send_message(msg)
+
+    async def remove_slot(self, slot : Union[str, Slot, SlotProxy, Reference]):
+        """
+        Removes a slot.
+
+        Parameters
+        ----------
+        slot : Union[str, Slot, SlotProxy, Reference]
+            Unique ID or reference of the slot to remove.
+
+        """
+        slot_id = get_slot_id(slot)
+        msg = RemoveSlot(slot_id=slot_id)
+        await self.send_message(msg)
 
 
 class ResoniteLinkWebsocketClient(AbstractResoniteLinkClient):
@@ -248,7 +398,7 @@ class ResoniteLinkWebsocketClient(AbstractResoniteLinkClient):
         if response.success:
             source_message_future.set_result(response)
         else:
-            source_message_future.set_exception(RuntimeError(response.error_info)) # TODO: Custom exception
+            source_message_future.set_exception(ResoniteLinkException(response))
 
     async def _send_raw_message(self, message : Union[bytes, str], text : bool = True):
         """

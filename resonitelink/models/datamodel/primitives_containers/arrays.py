@@ -159,6 +159,26 @@ class Array_Uri(SyncArray):
         return "Uri"
 
 
+@json_model("DateTime[]")
+@dataclass(slots=True)
+class Array_DateTime(SyncArray):
+    values : Annotated[List[str], JSONProperty("values")] = MISSING
+    
+    @property
+    def value_type_name(self) -> str:
+        return "DateTime"
+
+
+@json_model("TimeSpan[]")
+@dataclass(slots=True)
+class Array_TimeSpan(SyncArray):
+    values : Annotated[List[str], JSONProperty("values")] = MISSING
+    
+    @property
+    def value_type_name(self) -> str:
+        return "TimeSpan"
+
+
 @json_model("color[]")
 @dataclass(slots=True)
 class Array_Color(SyncArray):

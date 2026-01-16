@@ -2,7 +2,7 @@ from resonitelink.models.datamodel import Component
 from resonitelink.models.messages import Message
 from resonitelink.json import MISSING, json_model, JSONProperty
 from dataclasses import dataclass
-from typing import Annotated, Any
+from typing import Annotated
 
 
 @json_model("getComponent")

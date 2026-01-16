@@ -58,7 +58,7 @@ class FieldsGenerator(CodeGenerator):
             type_info = type_mappings[primitive_type]
 
             # 1. Non-Nullable fields
-            yield from _generate_field_class(f"{primitive_type}", f"Field_{type_info.type_name}", type_info.type, primitive_type, False, type_info.model_type_name)
+            yield from _generate_field_class(f"{primitive_type}", f"Field_{type_info.type_name}", type_info.type, f"{primitive_type}", False, type_info.model_type_name)
             yield f"\n\n"
             
             if primitive_type in non_nullable_types:
@@ -68,6 +68,6 @@ class FieldsGenerator(CodeGenerator):
                 continue
             
             # 2. Nullable fields
-            yield from _generate_field_class(f"{primitive_type}?", f"Field_Nullable_{type_info.type_name}", type_info.type, primitive_type, True, type_info.model_type_name)
+            yield from _generate_field_class(f"{primitive_type}?", f"Field_Nullable_{type_info.type_name}", type_info.type, f"{primitive_type}?", True, type_info.model_type_name)
             if primitive_types.index(primitive_type) < len(primitive_types) - 1:
                 yield f"\n\n"

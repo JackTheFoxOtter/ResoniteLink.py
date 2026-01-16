@@ -26,7 +26,7 @@ class Field_Nullable_Bool(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "bool"
+        return "bool?"
 
 
 @json_model("byte")
@@ -46,7 +46,7 @@ class Field_Nullable_Byte(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "byte"
+        return "byte?"
 
 
 @json_model("sbyte")
@@ -66,7 +66,7 @@ class Field_Nullable_SByte(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "sbyte"
+        return "sbyte?"
 
 
 @json_model("ushort")
@@ -86,7 +86,7 @@ class Field_Nullable_UShort(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "ushort"
+        return "ushort?"
 
 
 @json_model("short")
@@ -106,7 +106,7 @@ class Field_Nullable_Short(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "short"
+        return "short?"
 
 
 @json_model("uint")
@@ -126,7 +126,7 @@ class Field_Nullable_UInt(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "uint"
+        return "uint?"
 
 
 @json_model("int")
@@ -146,7 +146,7 @@ class Field_Nullable_Int(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "int"
+        return "int?"
 
 
 @json_model("ulong")
@@ -166,7 +166,7 @@ class Field_Nullable_ULong(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "ulong"
+        return "ulong?"
 
 
 @json_model("long")
@@ -186,7 +186,7 @@ class Field_Nullable_Long(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "long"
+        return "long?"
 
 
 @json_model("float")
@@ -206,7 +206,7 @@ class Field_Nullable_Float(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "float"
+        return "float?"
 
 
 @json_model("double")
@@ -226,7 +226,7 @@ class Field_Nullable_Double(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "double"
+        return "double?"
 
 
 @json_model("decimal")
@@ -246,7 +246,7 @@ class Field_Nullable_Decimal(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "decimal"
+        return "decimal?"
 
 
 @json_model("char")
@@ -266,7 +266,7 @@ class Field_Nullable_Char(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "char"
+        return "char?"
 
 
 @json_model("string")
@@ -293,6 +293,46 @@ class Field_Uri(Field):
 
 
 
+@json_model("DateTime")
+@dataclass(slots=True)
+class Field_DateTime(Field):
+    value : Annotated[str, JSONProperty("value")] = MISSING
+    
+    @property
+    def value_type_name(self) -> str:
+        return "DateTime"
+
+
+@json_model("DateTime?")
+@dataclass(slots=True)
+class Field_Nullable_DateTime(Field):
+    value : Annotated[Optional[str], JSONProperty("value")] = MISSING
+    
+    @property
+    def value_type_name(self) -> str:
+        return "DateTime?"
+
+
+@json_model("TimeSpan")
+@dataclass(slots=True)
+class Field_TimeSpan(Field):
+    value : Annotated[str, JSONProperty("value")] = MISSING
+    
+    @property
+    def value_type_name(self) -> str:
+        return "TimeSpan"
+
+
+@json_model("TimeSpan?")
+@dataclass(slots=True)
+class Field_Nullable_TimeSpan(Field):
+    value : Annotated[Optional[str], JSONProperty("value")] = MISSING
+    
+    @property
+    def value_type_name(self) -> str:
+        return "TimeSpan?"
+
+
 @json_model("color")
 @dataclass(slots=True)
 class Field_Color(Field):
@@ -310,7 +350,7 @@ class Field_Nullable_Color(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "color"
+        return "color?"
 
 
 @json_model("colorX")
@@ -330,7 +370,7 @@ class Field_Nullable_ColorX(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "colorX"
+        return "colorX?"
 
 
 @json_model("color32")
@@ -350,7 +390,7 @@ class Field_Nullable_Color32(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "color32"
+        return "color32?"
 
 
 @json_model("floatQ")
@@ -370,7 +410,7 @@ class Field_Nullable_FloatQ(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "floatQ"
+        return "floatQ?"
 
 
 @json_model("doubleQ")
@@ -390,7 +430,7 @@ class Field_Nullable_DoubleQ(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "doubleQ"
+        return "doubleQ?"
 
 
 @json_model("bool2")
@@ -410,7 +450,7 @@ class Field_Nullable_Bool2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "bool2"
+        return "bool2?"
 
 
 @json_model("bool3")
@@ -430,7 +470,7 @@ class Field_Nullable_Bool3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "bool3"
+        return "bool3?"
 
 
 @json_model("bool4")
@@ -450,7 +490,7 @@ class Field_Nullable_Bool4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "bool4"
+        return "bool4?"
 
 
 @json_model("byte2")
@@ -470,7 +510,7 @@ class Field_Nullable_Byte2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "byte2"
+        return "byte2?"
 
 
 @json_model("byte3")
@@ -490,7 +530,7 @@ class Field_Nullable_Byte3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "byte3"
+        return "byte3?"
 
 
 @json_model("byte4")
@@ -510,7 +550,7 @@ class Field_Nullable_Byte4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "byte4"
+        return "byte4?"
 
 
 @json_model("sbyte2")
@@ -530,7 +570,7 @@ class Field_Nullable_Sbyte2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "sbyte2"
+        return "sbyte2?"
 
 
 @json_model("sbyte3")
@@ -550,7 +590,7 @@ class Field_Nullable_Sbyte3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "sbyte3"
+        return "sbyte3?"
 
 
 @json_model("sbyte4")
@@ -570,7 +610,7 @@ class Field_Nullable_Sbyte4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "sbyte4"
+        return "sbyte4?"
 
 
 @json_model("ushort2")
@@ -590,7 +630,7 @@ class Field_Nullable_Ushort2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "ushort2"
+        return "ushort2?"
 
 
 @json_model("ushort3")
@@ -610,7 +650,7 @@ class Field_Nullable_Ushort3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "ushort3"
+        return "ushort3?"
 
 
 @json_model("ushort4")
@@ -630,7 +670,7 @@ class Field_Nullable_Ushort4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "ushort4"
+        return "ushort4?"
 
 
 @json_model("short2")
@@ -650,7 +690,7 @@ class Field_Nullable_Short2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "short2"
+        return "short2?"
 
 
 @json_model("short3")
@@ -670,7 +710,7 @@ class Field_Nullable_Short3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "short3"
+        return "short3?"
 
 
 @json_model("short4")
@@ -690,7 +730,7 @@ class Field_Nullable_Short4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "short4"
+        return "short4?"
 
 
 @json_model("uint2")
@@ -710,7 +750,7 @@ class Field_Nullable_Uint2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "uint2"
+        return "uint2?"
 
 
 @json_model("uint3")
@@ -730,7 +770,7 @@ class Field_Nullable_Uint3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "uint3"
+        return "uint3?"
 
 
 @json_model("uint4")
@@ -750,7 +790,7 @@ class Field_Nullable_Uint4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "uint4"
+        return "uint4?"
 
 
 @json_model("int2")
@@ -770,7 +810,7 @@ class Field_Nullable_Int2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "int2"
+        return "int2?"
 
 
 @json_model("int3")
@@ -790,7 +830,7 @@ class Field_Nullable_Int3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "int3"
+        return "int3?"
 
 
 @json_model("int4")
@@ -810,7 +850,7 @@ class Field_Nullable_Int4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "int4"
+        return "int4?"
 
 
 @json_model("ulong2")
@@ -830,7 +870,7 @@ class Field_Nullable_Ulong2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "ulong2"
+        return "ulong2?"
 
 
 @json_model("ulong3")
@@ -850,7 +890,7 @@ class Field_Nullable_Ulong3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "ulong3"
+        return "ulong3?"
 
 
 @json_model("ulong4")
@@ -870,7 +910,7 @@ class Field_Nullable_Ulong4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "ulong4"
+        return "ulong4?"
 
 
 @json_model("long2")
@@ -890,7 +930,7 @@ class Field_Nullable_Long2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "long2"
+        return "long2?"
 
 
 @json_model("long3")
@@ -910,7 +950,7 @@ class Field_Nullable_Long3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "long3"
+        return "long3?"
 
 
 @json_model("long4")
@@ -930,7 +970,7 @@ class Field_Nullable_Long4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "long4"
+        return "long4?"
 
 
 @json_model("float2")
@@ -950,7 +990,7 @@ class Field_Nullable_Float2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "float2"
+        return "float2?"
 
 
 @json_model("float3")
@@ -970,7 +1010,7 @@ class Field_Nullable_Float3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "float3"
+        return "float3?"
 
 
 @json_model("float4")
@@ -990,7 +1030,7 @@ class Field_Nullable_Float4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "float4"
+        return "float4?"
 
 
 @json_model("double2")
@@ -1010,7 +1050,7 @@ class Field_Nullable_Double2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "double2"
+        return "double2?"
 
 
 @json_model("double3")
@@ -1030,7 +1070,7 @@ class Field_Nullable_Double3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "double3"
+        return "double3?"
 
 
 @json_model("double4")
@@ -1050,7 +1090,7 @@ class Field_Nullable_Double4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "double4"
+        return "double4?"
 
 
 @json_model("float2x2")
@@ -1070,7 +1110,7 @@ class Field_Nullable_Float2x2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "float2x2"
+        return "float2x2?"
 
 
 @json_model("float3x3")
@@ -1090,7 +1130,7 @@ class Field_Nullable_Float3x3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "float3x3"
+        return "float3x3?"
 
 
 @json_model("float4x4")
@@ -1110,7 +1150,7 @@ class Field_Nullable_Float4x4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "float4x4"
+        return "float4x4?"
 
 
 @json_model("double2x2")
@@ -1130,7 +1170,7 @@ class Field_Nullable_Double2x2(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "double2x2"
+        return "double2x2?"
 
 
 @json_model("double3x3")
@@ -1150,7 +1190,7 @@ class Field_Nullable_Double3x3(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "double3x3"
+        return "double3x3?"
 
 
 @json_model("double4x4")
@@ -1170,4 +1210,4 @@ class Field_Nullable_Double4x4(Field):
     
     @property
     def value_type_name(self) -> str:
-        return "double4x4"
+        return "double4x4?"

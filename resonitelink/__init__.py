@@ -17,6 +17,7 @@ __version__ = "0.1.0a"
 __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
 
+from .exceptions import *
 from .json import *
 from .models.datamodel import *
 from .models.messages import *

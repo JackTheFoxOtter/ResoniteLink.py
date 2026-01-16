@@ -31,6 +31,9 @@ standalone_types = [
     "string",
     "Uri",
 
+    "DateTime",
+    "TimeSpan",
+
     "color",
     "colorX",
     "color32"
@@ -126,7 +129,10 @@ type_mappings.update({
     
     "char": LibraryTypeInfo("Char", str, ""),
     "string": LibraryTypeInfo("String", str, ""),
-    "Uri": LibraryTypeInfo("Uri", str, "")
+    "Uri": LibraryTypeInfo("Uri", str, ""),
+
+    "DateTime": LibraryTypeInfo("DateTime", str, ""),
+    "TimeSpan": LibraryTypeInfo("TimeSpan", str, "") 
 })
 
 # 2. Now we can get the model for every remaining primitive type and add it
@@ -149,3 +155,5 @@ for primitive_type in primitive_types:
 
 
 logger.debug(f"Registered types: [ {', '.join(type_mappings.keys())} ]")
+
+

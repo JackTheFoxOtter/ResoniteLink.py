@@ -2,7 +2,7 @@ from resonitelink.models.responses import Response
 from resonitelink.models.datamodel import Slot, Component
 from resonitelink.json import MISSING, JSONProperty, json_model
 from dataclasses import dataclass
-from typing import Annotated, Any
+from typing import Annotated
 
 
 @json_model("slotData")

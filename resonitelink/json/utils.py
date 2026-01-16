@@ -1,9 +1,10 @@
 from .models import JSONModel, JSONPropertyType
-from typing import Any, List
+from typing import Any, List, Callable
 
 __all__ = (
     'MISSING',
     'is_missing',
+    'optional',
     'format_object_structure',
 )
 
@@ -50,6 +51,18 @@ def is_missing(value : Any) -> bool:
 
     """
     return type(value) is _MissingSentinel
+
+
+def optional(value : Any, func : Callable[[], Any]) -> Any:
+    """
+    If value is MISSING, returns MISSING.
+    Otherwise returns result of func.
+
+    """
+    if is_missing(value):
+        return MISSING
+    else:
+        return func()
 
 
 def format_object_structure(obj : Any, print_missing : bool = False, prefix : str = "") -> str:
