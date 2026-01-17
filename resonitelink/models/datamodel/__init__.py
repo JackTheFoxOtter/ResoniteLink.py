@@ -12,3 +12,5 @@ from .worker import *
 
 from .members import *
 from .workers import *
+
+from .assets.mesh import *
