@@ -7,6 +7,7 @@ __all__ = (
     'SlotData',
     'ComponentData',
     'AssetData',
+    'NewEntityID'
 )
 
 
@@ -24,3 +25,7 @@ class ComponentData(Response):
 @json_model("assetData", Response)
 class AssetData(Response):
     asset_url : str = json_element("assetURL", str, default=MISSING)
+
+@json_model("newEntityId", Response)
+class NewEntityID(Response):
+    entity_id : str = json_element("entityId", str, default=MISSING)
