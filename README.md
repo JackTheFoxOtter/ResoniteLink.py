@@ -17,6 +17,9 @@ This API wrapper is currently in beta (so is ResoniteLink itself). There might b
 - Simple "high-level" layer with convenience features & abstractions to create scripts and automations easily.
 - Abstraction free "low-level" layer for more advanced use-cases like building SDKs.
 
+# Compatibility
+- This library requires Python 3.13 or later. Older Python versions are not supported.
+
 # Getting started
 Take a look at this example code from [hello_world.py](https://github.com/JackTheFoxOtter/ResoniteLink.py/blob/master/examples/hello_world.py). It will connect to ResoniteLink over WebSocket on the specified port, create a new slot, and attach a `TextRenderer` component with the text "*Hello, world!*" to it. You can enable ResoniteLink and get the port number in the `Session` tab of your Resonite dashboard (if you have the required permissions in the current world).
 
