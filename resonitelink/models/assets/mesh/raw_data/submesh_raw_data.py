@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from resonitelink.models.messages.assets.meshes import ImportMeshRawData
-    from typing import Optional, List
 
 from dataclasses import field
+from typing import Optional, List
 from array import array
 from abc import ABC, abstractmethod
 
@@ -33,7 +33,7 @@ class SubmeshRawData(ABC):
     def indices(self, indices : List[int]):
         self._indices = array("i", indices).tobytes()
     
-    def _get_binary_data(self, import_msg : ImportMeshRawData) -> bytes:
+    def _get_binary_data(self, import_msg : 'ImportMeshRawData') -> bytes:
         if not self._indices:
             raise ValueError("Binary data was never provided!")
         

@@ -24,19 +24,19 @@ class Proxy(Generic[TData], ABC):
     Proxies are always in the context of a client.
     
     """
-    _client : ResoniteLinkClient
+    _client : 'ResoniteLinkClient'
     _id : str
     _data : Optional[TData]
 
     @property
-    def client(self) -> ResoniteLinkClient:
+    def client(self) -> 'ResoniteLinkClient':
         return self._client
     
     @property
     def id(self) -> str:
         return self._id
 
-    def __init__(self, client : ResoniteLinkClient, id : str, data : Optional[TData] = None):
+    def __init__(self, client : 'ResoniteLinkClient', id : str, data : Optional[TData] = None):
         self._client = client
         self._id = id
         self._data = data
@@ -79,7 +79,7 @@ class Proxy(Generic[TData], ABC):
         raise NotImplementedError()
     
     @classmethod
-    def from_reference[T : Proxy](cls : Type[T], client : ResoniteLinkClient, reference : Reference) -> T:
+    def from_reference[T : Proxy](cls : Type[T], client : 'ResoniteLinkClient', reference : Reference) -> T:
         """
         Creates a proxy-element for the **target** of a reference.
 

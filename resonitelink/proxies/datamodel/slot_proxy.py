@@ -14,7 +14,7 @@ class SlotProxy(Proxy[Slot]):
     async def fetch_data(self) -> Slot:
         return await self.client.get_slot(self.id)
     
-    async def set_parent(self, parent : Union[str, Slot, SlotProxy, Reference]):
+    async def set_parent(self, parent : Union[str, Slot, 'SlotProxy', Reference]):
         await self.client.update_slot(slot=self.id, parent=parent)
         self.invalidate_data()
 

@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from resonitelink.models.messages import ImportMeshRawData
-    from typing import List
 
 from resonitelink.models.assets.mesh.raw_data import BlendshapeFrameRawData
 from resonitelink.json import MISSING, json_model, json_element, json_list
+from typing import List
 
 
 __all__ = (
@@ -27,7 +27,7 @@ class BlendshapeRawData():
     # Blendshapes need at least 1 frame.
     frames : List[BlendshapeFrameRawData] = json_list("frames", BlendshapeFrameRawData, default=MISSING)
 
-    def _get_binary_data(self, import_msg : ImportMeshRawData) -> bytes:
+    def _get_binary_data(self, import_msg : 'ImportMeshRawData') -> bytes:
         if not self.frames:
             raise ValueError("Blendshape frames were never provided!")
 
