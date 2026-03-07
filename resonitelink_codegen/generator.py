@@ -12,7 +12,7 @@ class CodeGenerator():
     Each code generator is responsible for one file.
     
     """
-    _generators : List[CodeGenerator] = []
+    _generators : List['CodeGenerator'] = []
     _filepath : str
 
     def __init__(self, filepath : str):
