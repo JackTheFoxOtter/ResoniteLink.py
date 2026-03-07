@@ -1,5 +1,5 @@
 from resonitelink_codegen import CodeGenerator
-from resonitelink.utils.types import type_mappings, primitive_types
+from resonitelink.types.types import type_mappings, primitive_types
 from typing import Type, Generator
 
 

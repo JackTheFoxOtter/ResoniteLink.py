@@ -1,9 +1,7 @@
 from resonitelink_codegen import CodeGenerator
-from resonitelink.utils.types import type_mappings, matrix_types
+from resonitelink.types.types import type_mappings, matrix_types
 from typing import Type, List, Generator
 
-
-# TODO: __all__ for all generators!
 
 class MatricesGenerator(CodeGenerator):
     """
