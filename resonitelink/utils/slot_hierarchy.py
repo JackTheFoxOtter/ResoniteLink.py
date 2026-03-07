@@ -15,8 +15,8 @@ class SlotHierarchy():
 
     """
     _slot : Slot
-    _parent : Optional[SlotHierarchy]
-    _children : List[SlotHierarchy]
+    _parent : Optional['SlotHierarchy']
+    _children : List['SlotHierarchy']
 
     @property
     def slot(self):
@@ -30,7 +30,7 @@ class SlotHierarchy():
     def children(self):
         return self._children
 
-    def __init__(self, slot : Slot, parent : Optional[SlotHierarchy], children : List[SlotHierarchy]):
+    def __init__(self, slot : Slot, parent : Optional['SlotHierarchy'], children : List['SlotHierarchy']):
         self._slot = slot
         self._parent = parent
         self._children = children
@@ -38,7 +38,7 @@ class SlotHierarchy():
     def __str__(self) -> str:
         return f"<SlotHierarchy: { '.'.join([ hierarchy.slot.name.value for hierarchy in self.get_path() ]) }>"
     
-    def get_path(self) -> Generator[SlotHierarchy, Any, Any]:
+    def get_path(self) -> Generator['SlotHierarchy', Any, Any]:
         """
         Yields all parent `SlotHierarchies` leading up to the current hierarchy.
 
@@ -47,7 +47,7 @@ class SlotHierarchy():
         A generator yielding the `SlotHierarchy` instances of all parents leading up to the current hierarchy.
 
         """
-        def _generate_recursively(hierarchy : SlotHierarchy) -> Generator[SlotHierarchy, Any, Any]:
+        def _generate_recursively(hierarchy : 'SlotHierarchy') -> Generator['SlotHierarchy', Any, Any]:
             if hierarchy.parent:
                 yield from _generate_recursively(hierarchy.parent)
             
@@ -55,7 +55,7 @@ class SlotHierarchy():
         
         yield from _generate_recursively(self)
 
-    def find(self, search_expr : Callable[[SlotHierarchy], bool], include_self : bool = True, search_depth : int = -1) -> Generator[SlotHierarchy, Any, Any]:
+    def find(self, search_expr : Callable[['SlotHierarchy'], bool], include_self : bool = True, search_depth : int = -1) -> Generator['SlotHierarchy', Any, Any]:
         """
         Searches the current hierarchy recursively and yields all `SlotHierarchy` instances matching the search expression.
 
@@ -73,7 +73,7 @@ class SlotHierarchy():
         Generator yielding all slots from the target hierarchy matching the search parameters.
         
         """
-        def _generate_recursively(hierarchy : SlotHierarchy, depth : int) -> Generator[SlotHierarchy, Any, Any]:
+        def _generate_recursively(hierarchy : 'SlotHierarchy', depth : int) -> Generator['SlotHierarchy', Any, Any]:
             """
             Generator to recursively yield all hierarchies matching the search parameters.
 
@@ -91,8 +91,8 @@ class SlotHierarchy():
 
     def format(
         self,
-        line_format : Callable[[SlotHierarchy], str] = lambda h: f"Slot '{h.slot.name.value}' ({len(h.slot.children) if h.children else 0} Child Slot(s), {len(h.slot.components) if h.slot.components else 0} Component(s))",
-        expand_check : Callable[[SlotHierarchy], bool] = lambda h: True
+        line_format : Callable[['SlotHierarchy'], str] = lambda h: f"Slot '{h.slot.name.value}' ({len(h.slot.children) if h.children else 0} Child Slot(s), {len(h.slot.components) if h.slot.components else 0} Component(s))",
+        expand_check : Callable[['SlotHierarchy'], bool] = lambda h: True
     ) -> str:
         """
         Utility function to recursively generate a nicely formatted string of a slot hierarchy.
@@ -109,7 +109,7 @@ class SlotHierarchy():
         Formatted multi-line string of specified slot hierarchy.
 
         """
-        def _generate_recursively(hierarchy : SlotHierarchy, depth = 0, is_last : bool = False, prefixes : List[str] = []) -> Generator[str, Any, Any]:
+        def _generate_recursively(hierarchy : 'SlotHierarchy', depth = 0, is_last : bool = False, prefixes : List[str] = []) -> Generator[str, Any, Any]:
             """
             Generator to recursively yield lines for multi-line string of specified slot hierarchy.
 
@@ -143,7 +143,7 @@ class SlotHierarchy():
         return "\n".join(_generate_recursively(self))
 
     @classmethod
-    def from_slot(cls, slot : Slot) -> SlotHierarchy:
+    def from_slot(cls, slot : Slot) -> 'SlotHierarchy':
         """
         Constructs a `SlotHierarchy` instance from the provided `Slot` instance.
         Any child `Slot`s will be resolved recursively to their own `SlotHierarchy` instances.
@@ -159,7 +159,7 @@ class SlotHierarchy():
             The slot to create the hierarchy for.
 
         """
-        def _from_slot(slot : Slot, parent_hierarchy : Optional[SlotHierarchy] = None):
+        def _from_slot(slot : Slot, parent_hierarchy : Optional['SlotHierarchy'] = None):
             """
             Recursively produces the `SlotHierarchy` instances.
 
