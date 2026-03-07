@@ -1,8 +1,7 @@
-from typing import Union, Type, Any
-
 from resonitelink.models.datamodel import Slot, Component, Reference, Field
 from resonitelink.json.utils import optional
 from resonitelink.proxies import SlotProxy, ComponentProxy
+from typing import Union, Type, Any
 
 
 __all__ = (
@@ -90,4 +89,3 @@ def optional_field(value : Any, field_type : Type[Field]) -> Any:
 
     """
     return optional(value, lambda: field_type(value=value))
-

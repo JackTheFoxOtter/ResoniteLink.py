@@ -5,7 +5,6 @@ from decimal import Decimal
 import numpy as np
 import logging
 
-from resonitelink.utils import make_first_char_uppercase
 from resonitelink.json import JSONModel
 
 
@@ -41,6 +40,26 @@ __all__ = (
 
 logger = logging.getLogger("types")
 logger.setLevel(logging.DEBUG)
+
+
+def _make_first_char_uppercase(value : str) -> str:
+    """
+    Formats the string so that the first character is uppercase.
+
+    Paramters
+    ---------
+    value : str
+        The string to format.
+
+    Returns
+    -------
+    The formatted string, the first char will now be uppercase (if it wasn't already).
+
+    """
+    if value and len(value) > 0:
+        value = value[0].upper() + value[1:]
+    
+    return value
 
 
 # Type aliases for standalone types
@@ -155,9 +174,11 @@ for matrix_type in matrix_types:
 
 @dataclass(slots=True)
 class LibraryTypeInfo():
-    type_name : str
-    type : Type # The "exact" type
-    py_type : Optional[Type] # The equivalent Python standard type, if any
+    type_name : str # The name of the Type in ResoniteLink.
+    type : Type # The main type.
+    type_code_name : str # The name of the main type as it appears in code.
+    alt_type : Optional[Type] # A comatible alt type, if any. (This is used usually for python native types that are fully compatible with the corresponding numpy type).
+    alt_type_code_name : Optional[str] # The name of the alt type as it appears in code.
     model_type_name : Optional[str]
 
 
@@ -165,28 +186,28 @@ type_mappings : Dict[str, LibraryTypeInfo] = { }
 
 # 1. All non-model types need to be mapped manually
 type_mappings.update({
-    "bool": LibraryTypeInfo("Bool", t_bool, bool, ""),
+    "bool": LibraryTypeInfo("Bool", t_bool, 't_bool', bool, 'bool', ""),
     
-    "byte": LibraryTypeInfo("Byte", t_byte, int, ""),
-    "sbyte": LibraryTypeInfo("SByte", t_sbyte, int, ""),
-    "ushort": LibraryTypeInfo("UShort", t_ushort, int, ""),
-    "short": LibraryTypeInfo("Short", t_short, int, ""),
-    "uint": LibraryTypeInfo("UInt", t_uint, int, ""),
-    "int": LibraryTypeInfo("Int", t_int, int, ""),
-    "ulong": LibraryTypeInfo("ULong", t_ulong, int, ""),
-    "long": LibraryTypeInfo("Long", t_long, int, ""),
+    "byte": LibraryTypeInfo("Byte", t_byte, 't_byte', int, 'int', ""),
+    "sbyte": LibraryTypeInfo("SByte", t_sbyte, 't_sbyte', int, 'int', ""),
+    "ushort": LibraryTypeInfo("UShort", t_ushort, 't_ushort', int, 'int', ""),
+    "short": LibraryTypeInfo("Short", t_short, 't_short', int, 'int', ""),
+    "uint": LibraryTypeInfo("UInt", t_uint, 't_uint', int, 'int', ""),
+    "int": LibraryTypeInfo("Int", t_int, 't_int', int, 'int', ""),
+    "ulong": LibraryTypeInfo("ULong", t_ulong, 't_ulong', int, 'int', ""),
+    "long": LibraryTypeInfo("Long", t_long, 't_long', int, 'int', ""),
     
-    "float": LibraryTypeInfo("Float", t_float, float, ""),
-    "double": LibraryTypeInfo("Double", t_double, float, ""),
+    "float": LibraryTypeInfo("Float", t_float, 't_float', float, 'float', ""),
+    "double": LibraryTypeInfo("Double", t_double, 't_double', float, 'float', ""),
     
-    "decimal": LibraryTypeInfo("Decimal", t_decimal, None, ""),
+    "decimal": LibraryTypeInfo("Decimal", t_decimal, 't_decimal', None, None, ""),
     
-    "char": LibraryTypeInfo("Char", str, str, ""),
-    "string": LibraryTypeInfo("String", str, str, ""),
-    "Uri": LibraryTypeInfo("Uri", str, str, ""),
+    "char": LibraryTypeInfo("Char", str, 'str', None, None, ""),
+    "string": LibraryTypeInfo("String", str, 'str', None, None, ""),
+    "Uri": LibraryTypeInfo("Uri", str, 'str', None, None, ""),
 
-    "DateTime": LibraryTypeInfo("DateTime", str, str, ""),
-    "TimeSpan": LibraryTypeInfo("TimeSpan", str, str, "")
+    "DateTime": LibraryTypeInfo("DateTime", str, 'str', None, None, ""),
+    "TimeSpan": LibraryTypeInfo("TimeSpan", str, 'str', None, None, "")
 })
 
 # 2. Now we can get the model for every remaining primitive type and add it
@@ -205,7 +226,7 @@ for primitive_type in primitive_types:
     
     else:
         # Model found! Values are stored using its data class
-        type_mappings[primitive_type] = LibraryTypeInfo(make_first_char_uppercase(primitive_type), model.data_class, None, model.type_name)
+        type_mappings[primitive_type] = LibraryTypeInfo(_make_first_char_uppercase(primitive_type), model.data_class, model.data_class.__name__, None, None, model.type_name)
 
 
 logger.debug(f"Registered types: [ {', '.join(type_mappings.keys())} ]")

@@ -1,6 +1,7 @@
 from resonitelink.json import *
 from resonitelink.math import VectorBase
 from resonitelink.types import *
+from resonitelink import *
 from typing import List, Tuple, Union, Type
 from abc import ABC, abstractmethod
 
@@ -8,34 +9,9 @@ from resonitelink.types import *
 from numpy.typing import NDArray
 
 
-@json_model(internal_type_name="t_float3X")
-class Float3Test(VectorBase[t_float]):
-    x : Union[float, t_float] = json_element("x", t_float, default=0.0)
-    y : Union[float, t_float] = json_element("y", t_float, default=0.0)
-    z : Union[float, t_float] = json_element("z", t_float, default=0.0)
 
-    @classmethod
-    def _get_array_shape(cls) -> Tuple[int]:
-        return (3,)
-    
-    @classmethod
-    def _get_element_type(cls) -> Type[t_float]:
-        return t_float
-    
-    @classmethod
-    def _from_array(cls, array : NDArray[t_float]) -> 'Float3Test':
-        return cls(array[0], array[1], array[2])
-    
-    def get_elements(self) -> List[t_float]:
-        return [
-            t_float(self.x),
-            t_float(self.y),
-            t_float(self.z)
-        ]
-
-
-vec1 = Float3Test(1.0, 2.0, 3.0)
-vec2 = Float3Test(-7.0, 8.0, 9.0)
+# vec1 = Float3(1.0, 2.0, 3.0)
+# vec2 = Float3(-7.0, 8.0, 9.0)
 vec3 = vec1.cross(vec2)
 print(type(vec3))
 print(vec3)

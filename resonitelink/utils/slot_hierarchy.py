@@ -1,6 +1,5 @@
-from typing import Any, List, Callable, Generator, Optional
-
 from resonitelink.models.datamodel import Slot
+from typing import Any, List, Callable, Generator, Optional
 
 
 __all__ = (

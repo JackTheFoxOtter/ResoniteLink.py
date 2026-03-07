@@ -1,6 +1,6 @@
 from resonitelink_codegen import CodeGenerator
 from resonitelink.types.types import type_mappings, primitive_types
-from typing import Type, Generator
+from typing import Generator
 
 
 class ArraysGenerator(CodeGenerator):
@@ -19,23 +19,24 @@ class ArraysGenerator(CodeGenerator):
         yield f"from resonitelink.models.datamodel.primitives import *\n"
         yield f"from resonitelink.models.datamodel import Member, SyncArray\n"
         yield f"from resonitelink.json import MISSING, json_model, json_list\n"
+        yield f"from resonitelink.types import *\n"
         yield f"from decimal import Decimal\n"
         yield f"from typing import List\n"
         yield f"\n\n"
 
         yield f"__all__ = (\n"
-        for vector_type in primitive_types:
-            type_info = type_mappings[vector_type]
+        for primitive_type in primitive_types:
+            type_info = type_mappings[primitive_type]
 
             yield f"    'Array_{type_info.type_name}',\n"
             
         yield f")\n"
         yield f"\n\n"
 
-        def _generate_array_class(model_name : str, class_name : str, value_type : Type, value_type_name : str):
+        def _generate_array_class(model_name : str, class_name : str, value_type_code_name : str, value_type_name : str):
             yield f"@json_model(\"{model_name}\", Member)\n"
             yield f"class {class_name}(SyncArray):\n"
-            yield f"    values : List[{value_type.__name__}] = json_list(\"values\", {value_type.__name__}, default=MISSING)\n"
+            yield f"    values : List[{value_type_code_name}] = json_list(\"values\", {value_type_code_name}, default=MISSING)\n"
             yield f"    \n"
             yield f"    @property\n"
             yield f"    def element_type(self) -> str:\n"
@@ -44,6 +45,6 @@ class ArraysGenerator(CodeGenerator):
         for primitive_type in primitive_types:
             type_info = type_mappings[primitive_type]
 
-            yield from _generate_array_class(f"{primitive_type}[]", f"Array_{type_info.type_name}", type_info.type, primitive_type)
+            yield from _generate_array_class(f"{primitive_type}[]", f"Array_{type_info.type_name}", type_info.type_code_name, primitive_type)
             if primitive_types.index(primitive_type) < len(primitive_types) - 1:
                 yield f"\n\n"

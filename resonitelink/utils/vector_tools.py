@@ -1,6 +1,5 @@
-from typing import Any, Iterator, Generator
-
 from resonitelink.models.datamodel import Float3, Float4, Color
+from typing import Any, Iterator, Generator
 
 
 __all__ = (

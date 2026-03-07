@@ -1,6 +1,6 @@
 from resonitelink_codegen import CodeGenerator
 from resonitelink.types.types import type_mappings, primitive_types, non_nullable_types
-from typing import Type, Generator
+from typing import Generator
 
 
 class FieldsGenerator(CodeGenerator):
@@ -18,6 +18,7 @@ class FieldsGenerator(CodeGenerator):
         """
         yield f"from resonitelink.models.datamodel.primitives import *\n"
         yield f"from resonitelink.models.datamodel import Member, Field\n"
+        yield f"from resonitelink.types import *\n"
         yield f"from resonitelink.json import MISSING, json_model, json_element\n"
         yield f"from decimal import Decimal\n"
         yield f"from typing import Optional\n"
@@ -34,11 +35,11 @@ class FieldsGenerator(CodeGenerator):
         yield f")\n"
         yield f"\n\n"
 
-        def _generate_field_class(model_name : str, class_name : str, value_type : Type, value_type_name : str, nullable : bool):
+        def _generate_field_class(model_name : str, class_name : str, value_type_code_name : str, value_type_name : str, nullable : bool):
             yield f"@json_model(\"{model_name}\", Member)\n"
             yield f"class {class_name}(Field):\n"
-            type_hint_str = f"Optional[{value_type.__name__}]" if nullable else f"{value_type.__name__}"
-            json_prop_str = f"json_element(\"value\", {value_type.__name__}, default=MISSING)"
+            type_hint_str = f"Optional[{value_type_code_name}]" if nullable else f"{value_type_code_name}"
+            json_prop_str = f"json_element(\"value\", {value_type_code_name}, default=MISSING)"
             yield f"    value : {type_hint_str} = {json_prop_str}\n"
             yield f"    \n"
             yield f"    @property\n"
@@ -49,7 +50,7 @@ class FieldsGenerator(CodeGenerator):
             type_info = type_mappings[primitive_type]
 
             # 1. Non-Nullable fields
-            yield from _generate_field_class(f"{primitive_type}", f"Field_{type_info.type_name}", type_info.type, f"{primitive_type}", False)
+            yield from _generate_field_class(f"{primitive_type}", f"Field_{type_info.type_name}", type_info.type_code_name, f"{primitive_type}", False)
             yield f"\n\n"
             
             if primitive_type in non_nullable_types:
@@ -59,6 +60,6 @@ class FieldsGenerator(CodeGenerator):
                 continue
             
             # 2. Nullable fields
-            yield from _generate_field_class(f"{primitive_type}?", f"Field_Nullable_{type_info.type_name}", type_info.type, f"{primitive_type}?", True)
+            yield from _generate_field_class(f"{primitive_type}?", f"Field_Nullable_{type_info.type_name}", type_info.type_code_name, f"{primitive_type}?", True)
             if primitive_types.index(primitive_type) < len(primitive_types) - 1:
                 yield f"\n\n"
