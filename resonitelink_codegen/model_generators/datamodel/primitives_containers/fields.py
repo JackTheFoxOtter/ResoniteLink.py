@@ -1,6 +1,7 @@
-from resonitelink_codegen import CodeGenerator
-from resonitelink.types.types import type_mappings, primitive_types, non_nullable_types
 from typing import Generator
+
+from resonitelink.utils.types import type_mappings, primitive_types, non_nullable_types
+from resonitelink_codegen import CodeGenerator
 
 
 class FieldsGenerator(CodeGenerator):
@@ -16,12 +17,13 @@ class FieldsGenerator(CodeGenerator):
         Generates the content of fields.py
 
         """
-        yield f"from resonitelink.models.datamodel.primitives import *\n"
-        yield f"from resonitelink.models.datamodel import Member, Field\n"
-        yield f"from resonitelink.types import *\n"
-        yield f"from resonitelink.json import MISSING, json_model, json_element\n"
         yield f"from decimal import Decimal\n"
         yield f"from typing import Optional\n"
+        yield f"\n"
+        yield f"from resonitelink.models.datamodel.primitives import *\n"
+        yield f"from resonitelink.models.datamodel import Member, Field\n"
+        yield f"from resonitelink.types.aliases import *\n"
+        yield f"from resonitelink.json import MISSING, json_model, json_element\n"
         yield f"\n\n"
 
         yield f"__all__ = (\n"

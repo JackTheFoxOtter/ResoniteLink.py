@@ -1,11 +1,13 @@
 #       >=============================================================================<
 # NOTE: !!! THIS FILE IS AUTO-GENERATED! DO NOT EDIT! MODIFY CODEGENERATOR INSTEAD! !!!
 #       >=============================================================================<
-from resonitelink.models.datamodel.primitives import *
-from resonitelink.models.datamodel import Member, Field
-from resonitelink.json import MISSING, json_model, json_element
 from decimal import Decimal
 from typing import Optional
+
+from resonitelink.models.datamodel.primitives import *
+from resonitelink.models.datamodel import Member, Field
+from resonitelink.types.aliases import *
+from resonitelink.json import MISSING, json_model, json_element
 
 
 __all__ = (
@@ -134,7 +136,7 @@ __all__ = (
 
 @json_model("bool", Member)
 class Field_Bool(Field):
-    value : bool = json_element("value", bool, default=MISSING)
+    value : t_bool = json_element("value", t_bool, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -143,7 +145,7 @@ class Field_Bool(Field):
 
 @json_model("bool?", Member)
 class Field_Nullable_Bool(Field):
-    value : Optional[bool] = json_element("value", bool, default=MISSING)
+    value : Optional[t_bool] = json_element("value", t_bool, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -152,7 +154,7 @@ class Field_Nullable_Bool(Field):
 
 @json_model("byte", Member)
 class Field_Byte(Field):
-    value : int = json_element("value", int, default=MISSING)
+    value : t_byte = json_element("value", t_byte, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -161,7 +163,7 @@ class Field_Byte(Field):
 
 @json_model("byte?", Member)
 class Field_Nullable_Byte(Field):
-    value : Optional[int] = json_element("value", int, default=MISSING)
+    value : Optional[t_byte] = json_element("value", t_byte, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -170,7 +172,7 @@ class Field_Nullable_Byte(Field):
 
 @json_model("sbyte", Member)
 class Field_SByte(Field):
-    value : int = json_element("value", int, default=MISSING)
+    value : t_sbyte = json_element("value", t_sbyte, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -179,7 +181,7 @@ class Field_SByte(Field):
 
 @json_model("sbyte?", Member)
 class Field_Nullable_SByte(Field):
-    value : Optional[int] = json_element("value", int, default=MISSING)
+    value : Optional[t_sbyte] = json_element("value", t_sbyte, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -188,7 +190,7 @@ class Field_Nullable_SByte(Field):
 
 @json_model("ushort", Member)
 class Field_UShort(Field):
-    value : int = json_element("value", int, default=MISSING)
+    value : t_ushort = json_element("value", t_ushort, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -197,7 +199,7 @@ class Field_UShort(Field):
 
 @json_model("ushort?", Member)
 class Field_Nullable_UShort(Field):
-    value : Optional[int] = json_element("value", int, default=MISSING)
+    value : Optional[t_ushort] = json_element("value", t_ushort, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -206,7 +208,7 @@ class Field_Nullable_UShort(Field):
 
 @json_model("short", Member)
 class Field_Short(Field):
-    value : int = json_element("value", int, default=MISSING)
+    value : t_short = json_element("value", t_short, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -215,7 +217,7 @@ class Field_Short(Field):
 
 @json_model("short?", Member)
 class Field_Nullable_Short(Field):
-    value : Optional[int] = json_element("value", int, default=MISSING)
+    value : Optional[t_short] = json_element("value", t_short, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -224,7 +226,7 @@ class Field_Nullable_Short(Field):
 
 @json_model("uint", Member)
 class Field_UInt(Field):
-    value : int = json_element("value", int, default=MISSING)
+    value : t_uint = json_element("value", t_uint, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -233,7 +235,7 @@ class Field_UInt(Field):
 
 @json_model("uint?", Member)
 class Field_Nullable_UInt(Field):
-    value : Optional[int] = json_element("value", int, default=MISSING)
+    value : Optional[t_uint] = json_element("value", t_uint, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -242,7 +244,7 @@ class Field_Nullable_UInt(Field):
 
 @json_model("int", Member)
 class Field_Int(Field):
-    value : int = json_element("value", int, default=MISSING)
+    value : t_int = json_element("value", t_int, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -251,7 +253,7 @@ class Field_Int(Field):
 
 @json_model("int?", Member)
 class Field_Nullable_Int(Field):
-    value : Optional[int] = json_element("value", int, default=MISSING)
+    value : Optional[t_int] = json_element("value", t_int, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -260,7 +262,7 @@ class Field_Nullable_Int(Field):
 
 @json_model("ulong", Member)
 class Field_ULong(Field):
-    value : int = json_element("value", int, default=MISSING)
+    value : t_ulong = json_element("value", t_ulong, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -269,7 +271,7 @@ class Field_ULong(Field):
 
 @json_model("ulong?", Member)
 class Field_Nullable_ULong(Field):
-    value : Optional[int] = json_element("value", int, default=MISSING)
+    value : Optional[t_ulong] = json_element("value", t_ulong, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -278,7 +280,7 @@ class Field_Nullable_ULong(Field):
 
 @json_model("long", Member)
 class Field_Long(Field):
-    value : int = json_element("value", int, default=MISSING)
+    value : t_long = json_element("value", t_long, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -287,7 +289,7 @@ class Field_Long(Field):
 
 @json_model("long?", Member)
 class Field_Nullable_Long(Field):
-    value : Optional[int] = json_element("value", int, default=MISSING)
+    value : Optional[t_long] = json_element("value", t_long, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -296,7 +298,7 @@ class Field_Nullable_Long(Field):
 
 @json_model("float", Member)
 class Field_Float(Field):
-    value : float = json_element("value", float, default=MISSING)
+    value : t_float = json_element("value", t_float, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -305,7 +307,7 @@ class Field_Float(Field):
 
 @json_model("float?", Member)
 class Field_Nullable_Float(Field):
-    value : Optional[float] = json_element("value", float, default=MISSING)
+    value : Optional[t_float] = json_element("value", t_float, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -314,7 +316,7 @@ class Field_Nullable_Float(Field):
 
 @json_model("double", Member)
 class Field_Double(Field):
-    value : float = json_element("value", float, default=MISSING)
+    value : t_double = json_element("value", t_double, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -323,7 +325,7 @@ class Field_Double(Field):
 
 @json_model("double?", Member)
 class Field_Nullable_Double(Field):
-    value : Optional[float] = json_element("value", float, default=MISSING)
+    value : Optional[t_double] = json_element("value", t_double, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -332,7 +334,7 @@ class Field_Nullable_Double(Field):
 
 @json_model("decimal", Member)
 class Field_Decimal(Field):
-    value : Decimal = json_element("value", Decimal, default=MISSING)
+    value : t_decimal = json_element("value", t_decimal, default=MISSING)
     
     @property
     def value_type_name(self) -> str:
@@ -341,7 +343,7 @@ class Field_Decimal(Field):
 
 @json_model("decimal?", Member)
 class Field_Nullable_Decimal(Field):
-    value : Optional[Decimal] = json_element("value", Decimal, default=MISSING)
+    value : Optional[t_decimal] = json_element("value", t_decimal, default=MISSING)
     
     @property
     def value_type_name(self) -> str:

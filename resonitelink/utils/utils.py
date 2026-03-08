@@ -1,7 +1,8 @@
+from typing import Union, Type, Any
+
 from resonitelink.models.datamodel import Slot, Component, Reference, Field
 from resonitelink.json.utils import optional
 from resonitelink.proxies import SlotProxy, ComponentProxy
-from typing import Union, Type, Any
 
 
 __all__ = (

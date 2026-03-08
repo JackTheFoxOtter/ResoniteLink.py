@@ -1,11 +1,13 @@
 #       >=============================================================================<
 # NOTE: !!! THIS FILE IS AUTO-GENERATED! DO NOT EDIT! MODIFY CODEGENERATOR INSTEAD! !!!
 #       >=============================================================================<
-from resonitelink.models.datamodel.primitives import *
-from resonitelink.models.datamodel import Member, SyncArray
-from resonitelink.json import MISSING, json_model, json_list
 from decimal import Decimal
 from typing import List
+
+from resonitelink.models.datamodel.primitives import *
+from resonitelink.models.datamodel import Member, SyncArray
+from resonitelink.types.aliases import *
+from resonitelink.json import MISSING, json_model, json_list
 
 
 __all__ = (
@@ -75,7 +77,7 @@ __all__ = (
 
 @json_model("bool[]", Member)
 class Array_Bool(SyncArray):
-    values : List[bool] = json_list("values", bool, default=MISSING)
+    values : List[t_bool] = json_list("values", t_bool, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -84,7 +86,7 @@ class Array_Bool(SyncArray):
 
 @json_model("byte[]", Member)
 class Array_Byte(SyncArray):
-    values : List[int] = json_list("values", int, default=MISSING)
+    values : List[t_byte] = json_list("values", t_byte, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -93,7 +95,7 @@ class Array_Byte(SyncArray):
 
 @json_model("sbyte[]", Member)
 class Array_SByte(SyncArray):
-    values : List[int] = json_list("values", int, default=MISSING)
+    values : List[t_sbyte] = json_list("values", t_sbyte, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -102,7 +104,7 @@ class Array_SByte(SyncArray):
 
 @json_model("ushort[]", Member)
 class Array_UShort(SyncArray):
-    values : List[int] = json_list("values", int, default=MISSING)
+    values : List[t_ushort] = json_list("values", t_ushort, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -111,7 +113,7 @@ class Array_UShort(SyncArray):
 
 @json_model("short[]", Member)
 class Array_Short(SyncArray):
-    values : List[int] = json_list("values", int, default=MISSING)
+    values : List[t_short] = json_list("values", t_short, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -120,7 +122,7 @@ class Array_Short(SyncArray):
 
 @json_model("uint[]", Member)
 class Array_UInt(SyncArray):
-    values : List[int] = json_list("values", int, default=MISSING)
+    values : List[t_uint] = json_list("values", t_uint, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -129,7 +131,7 @@ class Array_UInt(SyncArray):
 
 @json_model("int[]", Member)
 class Array_Int(SyncArray):
-    values : List[int] = json_list("values", int, default=MISSING)
+    values : List[t_int] = json_list("values", t_int, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -138,7 +140,7 @@ class Array_Int(SyncArray):
 
 @json_model("ulong[]", Member)
 class Array_ULong(SyncArray):
-    values : List[int] = json_list("values", int, default=MISSING)
+    values : List[t_ulong] = json_list("values", t_ulong, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -147,7 +149,7 @@ class Array_ULong(SyncArray):
 
 @json_model("long[]", Member)
 class Array_Long(SyncArray):
-    values : List[int] = json_list("values", int, default=MISSING)
+    values : List[t_long] = json_list("values", t_long, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -156,7 +158,7 @@ class Array_Long(SyncArray):
 
 @json_model("float[]", Member)
 class Array_Float(SyncArray):
-    values : List[float] = json_list("values", float, default=MISSING)
+    values : List[t_float] = json_list("values", t_float, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -165,7 +167,7 @@ class Array_Float(SyncArray):
 
 @json_model("double[]", Member)
 class Array_Double(SyncArray):
-    values : List[float] = json_list("values", float, default=MISSING)
+    values : List[t_double] = json_list("values", t_double, default=MISSING)
     
     @property
     def element_type(self) -> str:
@@ -174,7 +176,7 @@ class Array_Double(SyncArray):
 
 @json_model("decimal[]", Member)
 class Array_Decimal(SyncArray):
-    values : List[Decimal] = json_list("values", Decimal, default=MISSING)
+    values : List[t_decimal] = json_list("values", t_decimal, default=MISSING)
     
     @property
     def element_type(self) -> str:

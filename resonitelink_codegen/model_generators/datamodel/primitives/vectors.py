@@ -1,4 +1,4 @@
-from resonitelink.types import type_mappings, vector_types
+from resonitelink.utils.types import type_mappings, vector_types
 from resonitelink_codegen import CodeGenerator
 from typing import List, Generator, Optional
 
@@ -16,11 +16,12 @@ class VectorsGenerator(CodeGenerator):
         Generates the content of vectors.py
 
         """
-        yield f"from resonitelink.types import *\n"
+        yield f"from numpy.typing import NDArray\n"
+        yield f"from typing import Union, Type, Tuple, List\n"
+        yield f"\n"
+        yield f"from resonitelink.types.aliases import *\n"
         yield f"from resonitelink.json import MISSING, json_model, json_element\n"
         yield f"from resonitelink.math import VectorBase\n"
-        yield f"from numpy.typing import NDArray\n"
-        yield f"from typing import Type, Tuple, List\n"
         yield f"\n\n"
 
         yield f"__all__ = (\n"

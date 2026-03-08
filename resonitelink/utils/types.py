@@ -1,31 +1,13 @@
 from dataclasses import dataclass
-from decimal import Decimal
-from typing import TypeAlias, Optional, Type, List, Dict
-from decimal import Decimal
-import numpy as np
+from typing import Optional, Type, List, Dict
 import logging
 
+from resonitelink.utils.utils import make_first_char_uppercase
+from resonitelink.types import *
 from resonitelink.json import JSONModel
 
 
 __all__ = (
-    't_bool',
-    't_byte',
-    't_sbyte',
-    't_ushort',
-    't_short',
-    't_uint',
-    't_int',
-    't_ulong',
-    't_long',
-    't_float',
-    't_double',
-    't_decimal',
-    't_char',
-    't_string',
-    't_uri',
-    't_datetime',
-    't_timespan',
     'LibraryTypeInfo',
     'standalone_types',
     'vector_types',
@@ -40,46 +22,6 @@ __all__ = (
 
 logger = logging.getLogger("types")
 logger.setLevel(logging.DEBUG)
-
-
-def _make_first_char_uppercase(value : str) -> str:
-    """
-    Formats the string so that the first character is uppercase.
-
-    Paramters
-    ---------
-    value : str
-        The string to format.
-
-    Returns
-    -------
-    The formatted string, the first char will now be uppercase (if it wasn't already).
-
-    """
-    if value and len(value) > 0:
-        value = value[0].upper() + value[1:]
-    
-    return value
-
-
-# Type aliases for standalone types
-t_bool : TypeAlias = np.bool
-t_byte : TypeAlias = np.ubyte
-t_sbyte : TypeAlias = np.byte
-t_ushort : TypeAlias = np.uint16
-t_short : TypeAlias = np.int16
-t_uint : TypeAlias = np.uint32
-t_int : TypeAlias = np.int32
-t_ulong : TypeAlias = np.uint64
-t_long : TypeAlias = np.int64
-t_float : TypeAlias = np.float32
-t_double : TypeAlias = np.float64
-t_decimal : TypeAlias = Decimal
-t_char : TypeAlias = str
-t_string : TypeAlias = str
-t_uri : TypeAlias = str
-t_datetime : TypeAlias = str
-t_timespan : TypeAlias = str
 
 
 standalone_types = [
@@ -226,7 +168,7 @@ for primitive_type in primitive_types:
     
     else:
         # Model found! Values are stored using its data class
-        type_mappings[primitive_type] = LibraryTypeInfo(_make_first_char_uppercase(primitive_type), model.data_class, model.data_class.__name__, None, None, model.type_name)
+        type_mappings[primitive_type] = LibraryTypeInfo(make_first_char_uppercase(primitive_type), model.data_class, model.data_class.__name__, None, None, model.type_name)
 
 
 logger.debug(f"Registered types: [ {', '.join(type_mappings.keys())} ]")

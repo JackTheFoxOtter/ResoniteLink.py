@@ -24,6 +24,7 @@ from .logging import setup_logging
 setup_logging()
 
 from .exceptions import *
+from .types import *
 from .json import *
 from .math import *
 from .models.assets.mesh import *

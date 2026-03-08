@@ -1,6 +1,10 @@
+from resonitelink.utils.types import type_mappings, matrix_types
 from resonitelink_codegen import CodeGenerator
-from resonitelink.types import type_mappings, matrix_types
 from typing import List, Generator
+
+
+# TODO: There is a bug somewhere in the code generator, likely order of operations. Currently it won't run a second time.
+#       It's most likely related to the additional imports.
 
 
 class MatricesGenerator(CodeGenerator):
@@ -16,7 +20,7 @@ class MatricesGenerator(CodeGenerator):
         Generates the content of matrices.py
 
         """
-        yield f"from resonitelink.types import *\n"
+        yield f"from resonitelink.types.aliases import *\n"
         yield f"from resonitelink.json import MISSING, json_model, json_element\n"
         yield f"\n\n"
 

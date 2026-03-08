@@ -1,6 +1,8 @@
-from resonitelink_codegen import CodeGenerator
-from resonitelink.types.types import type_mappings, primitive_types
 from typing import Generator
+
+from resonitelink.utils.types import type_mappings, primitive_types
+from resonitelink_codegen import CodeGenerator
+from resonitelink.models import *
 
 
 class ArraysGenerator(CodeGenerator):
@@ -16,12 +18,13 @@ class ArraysGenerator(CodeGenerator):
         Generates the content of arrays.py
 
         """
-        yield f"from resonitelink.models.datamodel.primitives import *\n"
-        yield f"from resonitelink.models.datamodel import Member, SyncArray\n"
-        yield f"from resonitelink.json import MISSING, json_model, json_list\n"
-        yield f"from resonitelink.types import *\n"
         yield f"from decimal import Decimal\n"
         yield f"from typing import List\n"
+        yield f"\n"
+        yield f"from resonitelink.models.datamodel.primitives import *\n"
+        yield f"from resonitelink.models.datamodel import Member, SyncArray\n"
+        yield f"from resonitelink.types.aliases import *\n"
+        yield f"from resonitelink.json import MISSING, json_model, json_list\n"
         yield f"\n\n"
 
         yield f"__all__ = (\n"

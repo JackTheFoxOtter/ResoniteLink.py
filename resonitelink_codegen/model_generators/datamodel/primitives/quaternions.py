@@ -1,5 +1,5 @@
+from resonitelink.utils.types import type_mappings, quaternion_types
 from resonitelink_codegen import CodeGenerator
-from resonitelink.types import type_mappings, quaternion_types
 from typing import Generator
 
 
@@ -16,7 +16,7 @@ class QuaternionsGenerator(CodeGenerator):
         Generates the content of quaternions.py
 
         """
-        yield f"from resonitelink.types import *\n"
+        yield f"from resonitelink.types.aliases import *\n"
         yield f"from resonitelink.json import MISSING, json_model, json_element\n"
         yield f"\n\n"
 
