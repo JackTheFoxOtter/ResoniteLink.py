@@ -2,53 +2,52 @@ from resonitelink.json import *
 from resonitelink.math import VectorBase
 from resonitelink.types import *
 from resonitelink import *
+from resonitelink.models.resonite_link_session import ResoniteLinkSession
 from typing import List, Tuple, Union, Type
 from abc import ABC, abstractmethod
+import asyncio
+import logging
 
 from resonitelink.types import *
+from resonitelink.utils.session_listener import *
 from numpy.typing import NDArray
 
 
 
 # vec1 = Float3(1.0, 2.0, 3.0)
 # vec2 = Float3(-7.0, 8.0, 9.0)
-vec3 = vec1.cross(vec2)
-print(type(vec3))
-print(vec3)
+# vec3 = vec1.cross(vec2)
+# print(type(vec3))
+# print(vec3)
 
-# # Creates a new client that connects to ResoniteLink via websocket.
-# client = ResoniteLinkWebsocketClient(log_level=logging.INFO)
+# Creates a new client that connects to ResoniteLink via websocket.
+client = ResoniteLinkWebsocketClient(log_level=logging.INFO)
 
+@client.on_started
+async def on_client_started(client : ResoniteLinkClient):
+    """
+    This async function is called by the client at the end of its startup sequence.
+    You can use it to execute code once the client is up and running!
 
-# @client.on_started
-# async def on_client_started(client : ResoniteLinkClient):
-#     """
-#     This async function is called by the client at the end of its startup sequence.
-#     You can use it to execute code once the client is up and running!
+    """
+    parent = await client.add_slot("Root", name="Lib Perf Test")
+    count = 10
 
-#     """
-#     parent = await client.add_slot("Root", name="Lib Perf Test")
-#     count = 1000
+    # Test 1: Sequential
+    # for i in range(count):
+    #     await client.add_slot(parent, name=f"Child {i}")
 
-#     # Test 1: Sequential
-#     for i in range(count):
-#         await client.add_slot(parent, name=f"Child {i}")
+    # Test 2: Parallel
+    tasks = [ client.add_slot(parent, name=f"Child {i}") for i in range(count) ]
+    await asyncio.gather(*tasks)
 
-#     # Test 2: Parallel
-#     # tasks = [ client.add_slot(parent, name=f"Child {i}") for i in range(count) ]
-#     # await asyncio.gather(*tasks)
-
-#     # Stops the client manually. Without this, the client will run forever, which might be desired for some use-cases.
-#     await client.stop()
-
-
-# # Asks for the current port ResoniteLink is running on.
-# # port = int(input("ResoniteLink Port: "))
-# port = 50716
+    # Stops the client manually. Without this, the client will run forever, which might be desired for some use-cases.
+    await client.stop()
 
 
-# # Start the client on the specified port.
-# asyncio.run(client.start(port))
+# Start the client on the specified port.
+asyncio.run(client.start(auto_discover=True))
+
 
 
 

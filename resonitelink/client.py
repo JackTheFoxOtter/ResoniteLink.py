@@ -2,7 +2,7 @@ from __future__ import annotations # Delayed evaluation of type hints (PEP 563)
 
 from websockets.exceptions import ConnectionClosed as WebSocketConnectionClosed
 from websockets import connect as websocket_connect, ClientConnection as WebSocketClientConnection
-from asyncio import Event, Future, get_running_loop, wait_for, gather
+from asyncio import Event, Future, get_running_loop, wait_for, gather, create_task
 from typing import Optional, Union, List, Dict, Callable, Coroutine
 from enum import Enum
 from abc import ABC, abstractmethod
@@ -825,29 +825,46 @@ class ResoniteLinkWebsocketClient(ResoniteLinkClient):
         """
         super().__init__(logger=logger, log_level=log_level)
     
-    async def start(self, port : int):
+    async def start(self, port : int = -1, auto_discover : bool = False):
         """
         Connects this ResoniteLinkClient to the ResoniteLink API and starts processing messages.
 
         Parameters
         ----------
-        port : int
+        port : int, default = -1
             The port number to connect to.
+        auto_discover : bool, default = True
+            If set, the client will automatically connect to the port of the first ResoniteLink session it discovers on the local network.
+            This option will override any manually specified port number.
 
         """
-        if type(port) is not int: 
-            raise AttributeError(f"Port expected to be of type int, not {type(port)}!")
         if self._on_stopped.is_set(): 
             raise Exception("Cannot re-start a client that was already stopped!")
         if self._on_starting.is_set(): 
             raise Exception("Client is already starting!")
+        if (port <= 0 and not auto_discover):
+            raise ValueError(f"Either a port number must be specified, or auto discovery must be enabled.")
         
-        self._log(logging.DEBUG, lambda: f"Starting client on port {port}...")
+        if auto_discover:
+            # Connect to first discovered ResoniteLink session on local network
+            from resonitelink.utils.session_listener import ResoniteLinkSessionListener
+            
+            session_listener = ResoniteLinkSessionListener()
+            async with session_listener:
+                self._log(logging.INFO, lambda: f"Auto-discovery is enabled, waiting to discover ResoniteLink session...")
+                session = await session_listener.get_first_discovered_session()
+                self._log(logging.INFO, lambda: f"Discovered ResoniteLink session: '{session.session_name}' (ID: '{session.session_id}') on port {session.link_port}")
+                port = session.link_port
+
+        if type(port) is not int:
+            raise TypeError(f"Port expected to be of type int, not {type(port)}!")
+        
+        self._log(logging.INFO, lambda: f"Starting client on port {port}...")
         self._on_starting.set()
         await self._invoke_event_handlers(_ResoniteLinkClientEvent.STARTING)
 
         # Create the task that starts fetching for websocket messages once the websocket client connects
-        get_running_loop().create_task(self._fetch_loop())
+        create_task(self._fetch_loop())
         
         # Connects the websocket client to the specified port
         self._ws_uri : str = f"ws://localhost:{port}/"
