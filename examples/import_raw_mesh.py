@@ -2,61 +2,8 @@ from resonitelink.models.assets.mesh import TriangleSubmeshRawData
 from resonitelink.models.datamodel import Float3, Color, Reference, SyncList, Field_Enum, Field_Float, Field_Uri
 from resonitelink import ResoniteLinkClient, ResoniteLinkWebsocketClient
 from typing import Tuple, List, Generator, Any
-from math import sin, cos, sqrt
+from math import sin, cos
 import asyncio
-
-
-def sub_vector3(a : Float3, b : Float3):
-    """
-    Subtracts two Float3s.
-    NOTE: This was added as an example, better ways of doing vector math are planned for the future.
-
-    """
-    return Float3(
-        a.x - b.x, 
-        a.y - b.y, 
-        a.z - b.z
-    )
-
-
-def cross_vector3(a : Float3, b : Float3):
-    """
-    Computes the cross product of two Float3s.
-    NOTE: This was added as an example, better ways of doing vector math are planned for the future.
-    
-    """
-    return Float3(
-        a.y * b.z - a.z * b.y,
-        a.z * b.x - a.x * b.z,
-        a.x * b.y - a.y * b.x
-    )
-
-
-def normalize_vector3(vector : Float3):
-    """
-    Normalizes a Float3.
-    NOTE: This was added as an example, better ways of doing vector math are planned for the future.
-    
-    """
-    magnitude = sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 3)
-    return Float3(
-        vector.x / magnitude,
-        vector.y / magnitude, 
-        vector.z / magnitude
-    )
-
-
-def avg_vector3(*vectors : Float3):
-    """
-    Computes the average of two or more Float3s.
-    NOTE: This was added as an example, better ways of doing vector math are planned for the future.
-
-    """
-    return Float3(
-        sum( [v.x for v in vectors] ) / float(len(vectors)),
-        sum( [v.y for v in vectors] ) / float(len(vectors)),
-        sum( [v.z for v in vectors] ) / float(len(vectors))
-    )
 
 
 # Creates a new client that connects to ResoniteLink via websocket.
@@ -198,16 +145,15 @@ async def on_client_started(client : ResoniteLinkClient):
             p1 = points[idx1]
             p2 = points[idx2]
 
-            a = sub_vector3(p1, p0)
-            b = sub_vector3(p2, p0)
-
-            n = cross_vector3(a, b)
+            a = p1 - p0
+            b = p2 - p0
+            n = a.cross(b)
 
             connecting_face_normals[idx0].append(n)
             connecting_face_normals[idx1].append(n)
             connecting_face_normals[idx2].append(n)
-        
-        return [ normalize_vector3(avg_vector3(*normals)) for normals in connecting_face_normals ]
+
+        return [ Float3.avg(*normals).normalized() for normals in connecting_face_normals ]
     
     grid_size = (100, 100)
     wave_scale = (0.2, 0.2)
@@ -263,10 +209,5 @@ async def on_client_started(client : ResoniteLinkClient):
     # Stops the client manually. Without this, the client will run forever, which might be desired for some use-cases.
     await client.stop()
 
-
-# Asks for the current port ResoniteLink is running on.
-port = int(input("ResoniteLink Port: "))
-
-
-# Start the client on the specified port.
-asyncio.run(client.start(port))
+# Start the client, it will automatically connect to the first ResoniteLink session it discovers on the local network.
+asyncio.run(client.start(auto_discover=True))
