@@ -28,18 +28,18 @@ class SubmeshRawData(ABC):
         arr = array("i")
         arr.frombytes(self._indices)
         return arr.tolist()
-    
+
     @indices.setter
     def indices(self, indices : List[int]):
         self._indices = array("i", indices).tobytes()
-    
-    def _get_binary_data(self, import_msg : 'ImportMeshRawData') -> bytes:
-        if not self._indices:
-            raise ValueError("Binary data was never provided!")
-        
-        return self._indices
 
     @property
     @abstractmethod
     def index_count(self) -> int:
         raise NotImplementedError()
+
+    def extend_binary_data(self, data : bytearray, import_msg : 'ImportMeshRawData'):
+        if not self._indices:
+            raise ValueError("Binary data was never provided!")
+        
+        data.extend(self._indices)

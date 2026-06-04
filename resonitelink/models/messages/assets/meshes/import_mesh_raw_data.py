@@ -238,11 +238,11 @@ class ImportMeshRawData(BinaryPayloadMessage):
         
         if self.submeshes:
             for submesh in self.submeshes:
-                data.extend(submesh._get_binary_data(self))
+                submesh.extend_binary_data(data, self)
         
         if self.blendshapes:
             for blendshape in self.blendshapes:
-                data.extend(blendshape._get_binary_data(self))
+                blendshape.extend_binary_data(data, self)
         
         return data
 

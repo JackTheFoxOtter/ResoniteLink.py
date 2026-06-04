@@ -27,12 +27,9 @@ class BlendshapeRawData():
     # Blendshapes need at least 1 frame.
     frames : List[BlendshapeFrameRawData] = json_list("frames", BlendshapeFrameRawData, default=MISSING)
 
-    def _get_binary_data(self, import_msg : 'ImportMeshRawData') -> bytes:
+    def extend_binary_data(self, data : bytearray, import_msg : 'ImportMeshRawData'):
         if not self.frames:
             raise ValueError("Blendshape frames were never provided!")
 
-        data = bytearray()
         for frame in self.frames:
-            data.extend(frame._get_binary_data(import_msg, self))
-        
-        return data
+            frame.extend_binary_data(data, import_msg, self)

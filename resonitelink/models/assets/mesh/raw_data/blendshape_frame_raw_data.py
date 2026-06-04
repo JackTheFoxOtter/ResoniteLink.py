@@ -89,10 +89,9 @@ class BlendshapeFrameRawData():
     def tangent_deltas(self, tangent_deltas : List['Float3']):
         self._tangent_deltas = array("f", unpack_vectors_float3(iter(tangent_deltas))).tobytes()
 
-    def _get_binary_data(self, import_msg : 'ImportMeshRawData', blendshape_raw_data : 'BlendshapeRawData') -> bytes:
+    def extend_binary_data(self, data : bytearray, import_msg : 'ImportMeshRawData', blendshape_raw_data : 'BlendshapeRawData'):
         expected_data_size = import_msg.vertex_count * 4 * 3 # 3x float (4 bytes) per vertex
-        data = bytearray()
-
+        
         if not self._position_deltas:
             raise ValueError("Position deltas were never provided!")    
         elif len(self._position_deltas) != expected_data_size:
@@ -115,5 +114,3 @@ class BlendshapeFrameRawData():
                 raise ValueError(f"Tangent deltas size mismatch! Expected: {expected_data_size} (For mesh with {import_msg.vertex_count} vertices), Actual: {len(self._position_deltas)}")
             else:
                 data.extend(self._tangent_deltas)
-
-        return data
