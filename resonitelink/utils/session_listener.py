@@ -4,7 +4,7 @@ from threading import Lock
 from datetime import timedelta, datetime, timezone
 from asyncio import DatagramProtocol, DatagramTransport, Event, Queue, Task, get_running_loop, gather, create_task, sleep
 from socket import socket, SO_REUSEADDR, SOCK_DGRAM, AF_INET, SOL_SOCKET
-from typing import Final, ReadOnly, Dict, List, Callable, Coroutine, Optional
+from typing import Final, Dict, List, Callable, Coroutine, Optional
 from enum import Enum
 import logging
 import json
@@ -22,9 +22,9 @@ ANNOUNCE_PORT : Final[int] = 12512
 ANNOUNCE_INTERVAL : Final[timedelta] = timedelta(seconds=10)
 
 
-class _ResoniteLinkSessionListenerEvent(Enum):
+class _SessionEvent(Enum):
     """
-    All event types that can be subscribed to in a `SessionListener`.
+    All session event types that can be subscribed to in a `SessionListener`.
 
     """
     SESSION_DISCOVERED = 0
@@ -37,18 +37,18 @@ class _SessionEventData():
     Represents the data of a session event, which is handled in a queue.
 
     """
-    _event : _ResoniteLinkSessionListenerEvent
+    _event : _SessionEvent
     _session : ResoniteLinkSession
 
     @property
-    def event(self) -> _ResoniteLinkSessionListenerEvent:
+    def event(self) -> _SessionEvent:
         return self._event
     
     @property
     def session(self) -> ResoniteLinkSession:
         return self._session
 
-    def __init__(self, event : _ResoniteLinkSessionListenerEvent, session : ResoniteLinkSession):
+    def __init__(self, event : _SessionEvent, session : ResoniteLinkSession):
         self._event = event
         self._session = session
 
@@ -89,27 +89,19 @@ class _ResoniteLinkSessionListenerProtocol(DatagramProtocol):
             if session.link_port == 0:
                 # This indicates that the session was closed.
                 if self._listener._sessions.pop(session.session_id, None):
-                    self._listener._session_event_queue.put_nowait(_SessionEventData(_ResoniteLinkSessionListenerEvent.SESSION_CLOSED, session))
+                    self._listener._session_event_queue.put_nowait(_SessionEventData(_SessionEvent.SESSION_CLOSED, session))
                 
                 return
 
             if session.session_id in self._listener._sessions.keys():
                 # Session already in dict
                 self._listener._sessions[session.session_id] = session
-                self._listener._session_event_queue.put_nowait(_SessionEventData(_ResoniteLinkSessionListenerEvent.SESSION_UPDATED, session))
+                self._listener._session_event_queue.put_nowait(_SessionEventData(_SessionEvent.SESSION_UPDATED, session))
             
             else:
                 # Session not yet in dict
                 self._listener._sessions[session.session_id] = session
-                self._listener._session_event_queue.put_nowait(_SessionEventData(_ResoniteLinkSessionListenerEvent.SESSION_DISCOVERED, session))
-                    
-    def error_received(self, exc):
-        """
-        Called when a send or receive operation raises an OSError.
-        (Other than BlockingIOError or InterruptedError.)
-        
-        """
-        print(f"Received error: {exc}")
+                self._listener._session_event_queue.put_nowait(_SessionEventData(_SessionEvent.SESSION_DISCOVERED, session))
 
 
 class ResoniteLinkSessionListener():
@@ -117,7 +109,7 @@ class ResoniteLinkSessionListener():
     Helper class to discover ResoniteLink sessions currently running on the local network.
 
     """
-    _event_handlers : Dict[_ResoniteLinkSessionListenerEvent, List[Callable[[ResoniteLinkSessionListener, ResoniteLinkSession], Coroutine]]]
+    _event_handlers : Dict[_SessionEvent, List[Callable[[ResoniteLinkSessionListener, ResoniteLinkSession], Coroutine]]]
     _session_event_queue : Queue[_SessionEventData]
     _first_discovered_session : Optional[ResoniteLinkSession]
     _sessions : Dict[str, ResoniteLinkSession]
@@ -193,7 +185,7 @@ class ResoniteLinkSessionListener():
         Decorator syntax to register an event handler to the `SESSION_DISCOVERED` event.
 
         """
-        self._register_event_handler(_ResoniteLinkSessionListenerEvent.SESSION_DISCOVERED, func)
+        self._register_event_handler(_SessionEvent.SESSION_DISCOVERED, func)
         return func
     
     def on_session_updated(self, func : Callable[[ResoniteLinkSessionListener, ResoniteLinkSession], Coroutine]):
@@ -201,7 +193,7 @@ class ResoniteLinkSessionListener():
         Decorator syntax to register an event handler to the `SESSION_UPDATED` event.
 
         """
-        self._register_event_handler(_ResoniteLinkSessionListenerEvent.SESSION_UPDATED, func)
+        self._register_event_handler(_SessionEvent.SESSION_UPDATED, func)
         return func
     
     def on_session_removed(self, func : Callable[[ResoniteLinkSessionListener, ResoniteLinkSession], Coroutine]):
@@ -209,7 +201,7 @@ class ResoniteLinkSessionListener():
         Decorator syntax to register an event handler to the `SESSION_CLOSED` event.
 
         """
-        self._register_event_handler(_ResoniteLinkSessionListenerEvent.SESSION_CLOSED, func)
+        self._register_event_handler(_SessionEvent.SESSION_CLOSED, func)
         return func
     
     async def start(self):
@@ -284,7 +276,7 @@ class ResoniteLinkSessionListener():
         if self._logger.isEnabledFor(log_level):
             self._logger.log(log_level, msg_fn(*args, **kwargs))
     
-    def _register_event_handler(self, event : _ResoniteLinkSessionListenerEvent, handler : Callable[..., Coroutine]):
+    def _register_event_handler(self, event : _SessionEvent, handler : Callable[..., Coroutine]):
         """
         Registers a new event handler to be invoked when the specified client event occurs.
         This shouldn't be called directly from the outside, as it doesn't use strict typing for the `handler` parameter.
@@ -294,7 +286,7 @@ class ResoniteLinkSessionListener():
         handlers.append(handler)
         self._log(logging.DEBUG, lambda: f"Updated event handlers: {self._event_handlers}")
     
-    async def _invoke_event_handlers(self, event : _ResoniteLinkSessionListenerEvent, *args, **kwargs):
+    async def _invoke_event_handlers(self, event : _SessionEvent, *args, **kwargs):
         """
         Invokes all registered event handlers for the given event. 
 
@@ -358,7 +350,7 @@ class ResoniteLinkSessionListener():
             expired_keys : Optional[List[str]] = None
             for session in self._sessions.values():
                 if (session.is_expired(ANNOUNCE_INTERVAL.total_seconds() * 2.5)):
-                    self._session_event_queue.put_nowait(_SessionEventData(_ResoniteLinkSessionListenerEvent.SESSION_CLOSED, session))
+                    self._session_event_queue.put_nowait(_SessionEventData(_SessionEvent.SESSION_CLOSED, session))
                     
                     if not expired_keys:
                         expired_keys = []
@@ -378,7 +370,7 @@ class ResoniteLinkSessionListener():
         with self._sessions_lock:
             all_sessions = list(self._sessions.values())
             for session in all_sessions:
-                self._session_event_queue.put_nowait(_SessionEventData(_ResoniteLinkSessionListenerEvent.SESSION_CLOSED, session))
+                self._session_event_queue.put_nowait(_SessionEventData(_SessionEvent.SESSION_CLOSED, session))
                 del self._sessions[session.session_id]
     
     async def _start_udp_listener(self):
