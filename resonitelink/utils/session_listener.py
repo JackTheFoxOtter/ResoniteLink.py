@@ -9,7 +9,7 @@ from enum import Enum
 import logging
 import json
 
-from resonitelink.models.resonite_link_session import ResoniteLinkSession
+from resonitelink.models.system import ResoniteLinkSession
 from resonitelink.json import ResoniteLinkJSONDecoder
 
 

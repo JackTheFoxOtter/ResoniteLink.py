@@ -2,7 +2,7 @@ from resonitelink.json import *
 from resonitelink.math import VectorBase
 from resonitelink.types import *
 from resonitelink import *
-from resonitelink.models.resonite_link_session import ResoniteLinkSession
+from resonitelink.models.system.resonite_link_session import ResoniteLinkSession
 from typing import List, Tuple, Union, Type
 from abc import ABC, abstractmethod
 import asyncio
