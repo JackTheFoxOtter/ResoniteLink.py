@@ -27,9 +27,5 @@ async def on_client_started(client : ResoniteLinkClient):
     await client.stop()
 
 
-# Asks for the current port ResoniteLink is running on.
-port = int(input("ResoniteLink Port: "))
-
-
-# Start the client on the specified port.
-asyncio.run(client.start(port))
+# Start the client, it will automatically connect to the first ResoniteLink session it discovers on the local network.
+asyncio.run(client.start(auto_discover=True))

@@ -209,5 +209,6 @@ async def on_client_started(client : ResoniteLinkClient):
     # Stops the client manually. Without this, the client will run forever, which might be desired for some use-cases.
     await client.stop()
 
+
 # Start the client, it will automatically connect to the first ResoniteLink session it discovers on the local network.
 asyncio.run(client.start(auto_discover=True))
