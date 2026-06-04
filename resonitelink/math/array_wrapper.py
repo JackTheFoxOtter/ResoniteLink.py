@@ -1,5 +1,5 @@
 from numpy.typing import NDArray
-from typing import List, Tuple, Type
+from typing import List, Tuple, Type, TypeVar
 from numpy import generic, array
 from abc import ABC, abstractmethod
 
@@ -9,6 +9,7 @@ __all__ = (
 )
 
 
+A = TypeVar('A', bound='NumpyArrayWrapper')
 class NumpyArrayWrapper[T : generic](ABC):
     """
     Abstract base class for all types that are wrapped into Numpy arrays (currently vectors & matrices).
@@ -16,7 +17,7 @@ class NumpyArrayWrapper[T : generic](ABC):
     """
     @classmethod
     @abstractmethod
-    def _get_array_shape(cls) -> Tuple[int]:
+    def _get_array_shape(cls) -> Tuple[int, ...]:
         raise NotImplementedError()
     
     @classmethod
@@ -26,11 +27,11 @@ class NumpyArrayWrapper[T : generic](ABC):
     
     @classmethod
     @abstractmethod
-    def _from_array(cls, array : NDArray[T]) -> 'NumpyArrayWrapper':
+    def _from_array(cls, array : NDArray[T]) -> A: # type: ignore
         raise NotImplementedError()
 
     @classmethod
-    def from_array(cls, array : NDArray[T]) -> 'NumpyArrayWrapper':
+    def from_array(cls, array : NDArray[T]) -> A: # type: ignore
         if array.shape != cls._get_array_shape():
             raise ValueError(f"Invalid array shape for {cls.__name__}: {array.shape} (Expected: {cls._get_array_shape()})")
         
