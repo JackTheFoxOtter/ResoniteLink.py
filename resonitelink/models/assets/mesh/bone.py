@@ -19,5 +19,5 @@ class Bone():
     name : str = json_element("name", str, default=MISSING)
 
     # The bind pose of the bone - its default transform in model space.
-    #This is essentially the pose of the bone relative to the vertices where the vertices bound to it will be in their original spot. 
+    # This is essentially the pose of the bone relative to the vertices where the vertices bound to it will be in their original spot.
     bind_pose : Float4x4 = json_element("bindPose", Float4x4, default=MISSING)
