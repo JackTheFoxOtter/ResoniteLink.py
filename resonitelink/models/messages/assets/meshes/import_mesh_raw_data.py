@@ -104,7 +104,7 @@ class ImportMeshRawData(BinaryPayloadMessage):
     @property
     def positions(self) -> List[Float3]:
         if not self._positions:
-            raise ValueError("Positions were never provided!")
+            raise ValueError("Vertex positions were never provided!")
         
         arr = array("f")
         arr.frombytes(self._positions)
@@ -152,7 +152,7 @@ class ImportMeshRawData(BinaryPayloadMessage):
     @property
     def colors(self) -> List[Color]:
         if not self._colors:
-            raise ValueError("Colors were never provided!")
+            raise ValueError("Vertex colors were never provided!")
         
         arr = array("f")
         arr.frombytes(self._colors)
@@ -161,7 +161,7 @@ class ImportMeshRawData(BinaryPayloadMessage):
     @colors.setter
     def colors(self, colors : List[Color]):
         if len(colors) != self.vertex_count:
-            raise ValueError(f"Expected {self.vertex_count} vertex colors, but got {len(colors)} colors.")
+            raise ValueError(f"Expected {self.vertex_count} vertex colors, but got {len(colors)} vertex colors.")
         
         self._colors = array("f", unpack_vectors_color(iter(colors))).tobytes()
     
@@ -205,7 +205,7 @@ class ImportMeshRawData(BinaryPayloadMessage):
     @bone_weights.setter
     def bone_weights(self, bone_weights : List[BoneWeightRawData]):
         if len(bone_weights) != self.vertex_count:
-            raise ValueError(f"Expected {self.vertex_count} vertex colors, but got {len(bone_weights)} colors.")
+            raise ValueError(f"Expected {self.vertex_count} bone weights, but got {len(bone_weights)} bone weights.")
         
         arr = bytearray()
         for bone_weight in bone_weights:

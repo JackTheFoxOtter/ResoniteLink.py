@@ -1,3 +1,2 @@
 websockets==16.0.*
 numpy==2.4.*
-quaternionic==1.0.*

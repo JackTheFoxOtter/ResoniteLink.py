@@ -1,7 +1,6 @@
 from typing import TypeVar, Any
 from abc import ABC
 import numpy as np
-import quaternionic
 
 from resonitelink.math.array_wrapper import NumpyArrayWrapper
 
@@ -31,16 +30,16 @@ class MatrixBase[T : np.generic](NumpyArrayWrapper[T], ABC):
 Q = TypeVar('Q', bound='QuaternionBase')
 class QuaternionBase[T : np.generic](NumpyArrayWrapper[T], ABC):
     def __add__(self : Q, other : Any) -> Q:
-        return self._from_array(quaternionic.array(self) + quaternionic.array(other))
+        return self._from_array(np.array(self) + np.array(other))
 
     def __sub__(self : Q, other : Any) -> Q:
-        return self._from_array(quaternionic.array(self) - quaternionic.array(other))
+        return self._from_array(np.array(self) - np.array(other))
     
     def __mul__(self : Q, other : Any) -> Q:
-        return self._from_array(quaternionic.array(self) * quaternionic.array(other))
+        return self._from_array(np.array(self) * np.array(other))
     
     def __div__(self : Q, other : Any) -> Q:
-        return self._from_array(quaternionic.array(self) / quaternionic.array(other))
+        return self._from_array(np.array(self) / np.array(other))
 
 
 V = TypeVar('V', bound='VectorBase')
