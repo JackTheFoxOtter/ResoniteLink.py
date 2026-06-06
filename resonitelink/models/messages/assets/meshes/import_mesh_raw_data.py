@@ -20,9 +20,9 @@ class ImportMeshRawData(BinaryPayloadMessage):
     _positions : Optional[bytes] = field(default=None, init=False) # float3
     _normals : Optional[bytes] = field(default=None, init=False) # float3
     _tangents : Optional[bytes] = field(default=None, init=False) # float4
-    _colors : Optional[bytes] = field(default=None, init=False) # color (float4: rgba)
+    _colors : Optional[bytes] = field(default=None, init=False) # float4: rgba
     _bone_weights : Optional[bytes] = field(default=None, init=False) # struct{ int, float } (bone_index, weight)
-    _uvs : Optional[List[bytes]] = field(default=None, init=False) # float
+    _uvs : Optional[List[bytes]] = field(default=None, init=False) # list of float2
 
     # Number of vertices in this mesh.
     vertex_count : int = json_element("vertexCount", int, default=MISSING, init=False)
@@ -68,7 +68,7 @@ class ImportMeshRawData(BinaryPayloadMessage):
 
     # Blendshapes of this mesh.
     # These allow modifying the vertex positions, normals & tangents for animations such as facial expressions.
-    blendshapes : List[BlendshapeRawData] = json_list("blendshapes", BlendshapeRawData, default=MISSING) # TODO: Pack into binary payload
+    blendshapes : List[BlendshapeRawData] = json_list("blendshapes", BlendshapeRawData, default=MISSING)
 
     # Bones of the mesh when data represents a skinned mesh.
     # These will be referred to by their index from vertex data.
