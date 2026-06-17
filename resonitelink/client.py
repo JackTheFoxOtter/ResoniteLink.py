@@ -825,25 +825,30 @@ class ResoniteLinkWebsocketClient(ResoniteLinkClient):
         """
         super().__init__(logger=logger, log_level=log_level)
     
-    async def start(self, port : int = -1, auto_discover : bool = False):
+    async def start(self, port : int = -1, uri : str = 'ws://localhost:{port}/', auto_discover : bool = False):
         """
         Connects this ResoniteLinkClient to the ResoniteLink API and starts processing messages.
 
         Parameters
         ----------
         port : int, default = -1
-            The port number to connect to.
+            The port number to connect to. Only has an affect if uri includes a 'port' placeholder.
+        uri : str, default = 'ws://localhost:{port}/'
+            The uri to connect to. May include a 'port' placeholder, which will get replaced with the value specified as parameter 'port'.
         auto_discover : bool, default = True
             If set, the client will automatically connect to the port of the first ResoniteLink session it discovers on the local network.
-            This option will override any manually specified port number.
+            In that case, the parameters 'port' and 'uri' don't have an effect, instead a connection is established on 'ws://localhost:{port}/',
+            where 'port' is the port of the first discovered ResoniteLink session.
+            The call will yield execution until a ResoniteLink session is found.
+            (Resonite announces active ResoniteLink sessions once when enabled, and then repeatedly in 10 second intervals.)
 
         """
         if self._on_stopped.is_set(): 
             raise Exception("Cannot re-start a client that was already stopped!")
         if self._on_starting.is_set(): 
             raise Exception("Client is already starting!")
-        if (port <= 0 and not auto_discover):
-            raise ValueError(f"Either a port number must be specified, or auto discovery must be enabled.")
+        if (port <= 0 and '{port}' in uri and not auto_discover):
+            raise ValueError(f"No port specified for argument 'port' in uri '{uri}'.")
         
         if auto_discover:
             # Connect to first discovered ResoniteLink session on local network
@@ -854,12 +859,19 @@ class ResoniteLinkWebsocketClient(ResoniteLinkClient):
                 self._log(logging.INFO, lambda: f"Auto-discovery is enabled, waiting to discover ResoniteLink session...")
                 session = await session_listener.get_first_discovered_session()
                 self._log(logging.INFO, lambda: f"Discovered ResoniteLink session: '{session.session_name}' (ID: '{session.session_id}') on port {session.link_port}")
+                uri = 'ws://localhost:{port}/'
                 port = session.link_port
+
+        if type(uri) is not str:
+            raise TypeError(f"Uri expected to be of type str, not {type(uri)}")
 
         if type(port) is not int:
             raise TypeError(f"Port expected to be of type int, not {type(port)}!")
         
-        self._log(logging.INFO, lambda: f"Starting client on port {port}...")
+        # Determine uri for websocket connection
+        self._ws_uri = uri.format(port=port)
+        
+        self._log(logging.INFO, lambda: f"Starting client on {self._ws_uri}...")
         self._on_starting.set()
         await self._invoke_event_handlers(_ResoniteLinkClientEvent.STARTING)
 
@@ -867,7 +879,6 @@ class ResoniteLinkWebsocketClient(ResoniteLinkClient):
         create_task(self._fetch_loop())
         
         # Connects the websocket client to the specified port
-        self._ws_uri : str = f"ws://localhost:{port}/"
         self._ws = await websocket_connect(self._ws_uri)
 
         self._log(logging.INFO, lambda: f"Connection established! Connected to ResoniteLink on {self._ws_uri}")
