@@ -1,7 +1,7 @@
 from __future__ import annotations # Delayed evaluation of type hints (PEP 563)
 
 from websockets.exceptions import ConnectionClosed as WebSocketConnectionClosed
-from websockets import connect as websocket_connect, ClientConnection as WebSocketClientConnection
+from websockets import CloseCode, connect as websocket_connect, ClientConnection as WebSocketClientConnection
 from asyncio import Event, Future, get_running_loop, wait_for, gather, create_task
 from typing import Optional, Union, List, Dict, Callable, Coroutine
 from enum import Enum
@@ -879,7 +879,8 @@ class ResoniteLinkWebsocketClient(ResoniteLinkClient):
         create_task(self._fetch_loop())
         
         # Connects the websocket client to the specified port
-        self._ws = await websocket_connect(self._ws_uri)
+        # ResoniteLink messages can get *very* big, so we disable the maximum size.
+        self._ws = await websocket_connect(self._ws_uri, max_size=None)
 
         self._log(logging.INFO, lambda: f"Connection established! Connected to ResoniteLink on {self._ws_uri}")
         self._on_started.set()
@@ -923,6 +924,10 @@ class ResoniteLinkWebsocketClient(ResoniteLinkClient):
                 await self._process_message(message_bytes)
             
             except WebSocketConnectionClosed as ex:
+                if not ex.rcvd or ex.rcvd.code != CloseCode.NORMAL_CLOSURE:
+                    # Disconnected with some non-normal close code
+                    self._log(logging.ERROR, lambda: f"Abnormal websocket closure: {ex}")
+                
                 # TODO: Proper reconnection logic on ConnectionClosed
                 self._on_stopped.set()
         
