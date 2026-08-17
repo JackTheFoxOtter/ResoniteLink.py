@@ -31,11 +31,19 @@ class SlotHierarchy():
 
     @property
     def children_count(self):
-        return len(self._children)
+        return len(self.children)
 
     @property
     def children_count_recursive(self):
-        return len(self.children) + sum([ child.children_count_recursive for child in self._children ])
+        return len(self.children) + sum([ child.children_count_recursive for child in self.children ])
+
+    @property
+    def component_count(self):
+        return len(self.slot.components)
+
+    @property
+    def component_count_recursive(self):
+        return len(self.slot.components) + sum([ child.component_count_recursive for child in self.children ])
 
     def __init__(self, slot : Slot, parent : Optional['SlotHierarchy'], children : List['SlotHierarchy']):
         self._slot = slot

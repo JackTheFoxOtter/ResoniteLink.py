@@ -49,10 +49,8 @@ import numpy as np
 # print(f"Quaternion: {q1 * q2}")
 
 
-
-
-
-
+from resonitelink.utils.slot_hierarchy import SlotHierarchy
+from typing import Optional
 
 
 # Creates a new client that connects to ResoniteLink via websocket.
@@ -66,80 +64,31 @@ async def on_client_started(client : ResoniteLinkClient):
     You can use it to execute code once the client is up and running!
 
     """
-    def calc_uv_colors(width : int, height : int) -> List[int]:
-        """
-        Generates color data for a simple UV texture (X and Y coordinates mapped to R and G).
+    # Fetch the ENTIRE scene
+    world_root = await client.get_slot("Root", depth=-1, include_component_data=True)
+    world_hierarchy = SlotHierarchy.from_slot(world_root)
+    print(f"Slot {world_root.name.value}, Total Slots: {world_hierarchy.children_count_recursive + 1}, Total Components: {world_hierarchy.component_count_recursive}")
 
-        Parameters
-        ----------
-        width : int
-            Width of the texture.
-        height : int
-            Height of the texture.
+    # lizzy_slot : Optional[Slot] = None
 
-        Returns
-        -------
-        List of RGBA integer values between 0 and 255 (`byte`).
-
-        """
-        def _generate() -> Generator[int]:
-            for x in range(width):
-                for y in range(height):
-                    yield int(x / width * 255)
-                    yield int(y / height * 255)
-                    yield 0
-                    yield 255
-
-        return list(_generate())
+    # for child_slot in world_root.children:
+    #     if child_slot.name.value.startswith("L¡zzy Client"):
+    #     # if child_slot.name.value.startswith("Test"):
+    #         lizzy_slot = child_slot
+    #         break
     
-    # Imports the color data as a texture.
-    texture_uri = await client.import_texture_2d_raw_data(
-        width=1024,
-        height=1024,
-        data=calc_uv_colors(1024, 1024)
-    )
+    # if lizzy_slot:
+    #    # Lizzy found, now fully resolve this slot
+    #    lizzy_slot_full = await client.get_slot(lizzy_slot, depth=-1, include_component_data=True)
+    #    lizzy_hierarchy = SlotHierarchy.from_slot(lizzy_slot_full)
+    #    logging.info(f"Lizzy found, total slots: {lizzy_hierarchy.children_count_recursive}")
 
-    # Adds a new slot. Since no parent was specified, it will be added to the world root by default.
-    slot = await client.add_slot(name="Imported Texture", position=Float3(0, 1.5, 0))
+    #    for match in lizzy_hierarchy.find(lambda slot: any([any(type(member) is Field_String and member.value == "MentorRequestsInterface/LocalRequestItem" for name, member in component.members.items()) for component in slot.slot.components])):
+    #        logging.info(f"Match found: {match}")
+       
 
-    # Adds a Texture2DComponent, assigns a reference to the imported texture, and sets up some configuration.
-    static_texture_2d = await slot.add_component(
-        "[FrooxEngine]FrooxEngine.StaticTexture2D", 
-        URL=Field_Uri(texture_uri),
-        WrapModeU=Field_Enum("Clamp", "[FrooxEngine]FrooxEngine.TextureWrapMode"),
-        WrapModeV=Field_Enum("Clamp", "[FrooxEngine]FrooxEngine.TextureWrapMode"),
-        CrunchCompressed=Field_Bool(False),
-        MipMaps=Field_Bool(False)
-    )
-    
-    # Adds an UnlitMaterial and assigns the texture.
-    material = await slot.add_component(
-        "[FrooxEngine]FrooxEngine.UnlitMaterial",
-        Texture=Reference(static_texture_2d.id, "[FrooxEngine]FrooxEngine.IAssetProvider<[FrooxEngine]FrooxEngine.ITexture2D>"),
-        Sidedness=Field_Enum("Double", "[FrooxEngine]FrooxEngine.Sideness")
-    )
-    
-    # Adds a quad mesh to render the texture on.
-    quad_mesh = await slot.add_component("[FrooxEngine]FrooxEngine.QuadMesh")
-    
-    # Creates a mesh renderer for the mesh and material.
-    mesh_renderer = await slot.add_component(
-        "[FrooxEngine]FrooxEngine.MeshRenderer", 
-        Mesh=Reference(target_type="[FrooxEngine]FrooxEngine.IAssetProvider<[FrooxEngine]FrooxEngine.Mesh>", target_id=quad_mesh.id),
-        Materials=SyncList(Reference(target_type="[FrooxEngine]FrooxEngine.IAssetProvider<[FrooxEngine]FrooxEngine.Material>", target_id=material.id))
-    )
-
-    # Little hack to fix issue with Materials not being set currently, should be obsolete once SyncList bugs are fixed in ResoniteLink.
-    await mesh_renderer.update_members(Materials=SyncList(Reference(target_type="[FrooxEngine]FrooxEngine.IAssetProvider<[FrooxEngine]FrooxEngine.Material>", target_id=material.id)))
-
-    # Adds MeshCollider component.
-    await slot.add_component("[FrooxEngine]FrooxEngine.MeshCollider")
-    
-    # Adds Grabbable component and makes it scalable.
-    await slot.add_component(
-        "[FrooxEngine]FrooxEngine.Grabbable", 
-        Scalable=Field_Bool(True)
-    )
+    # else:
+    #     logging.info("Lizzy not found in world.")
 
     # Stops the client manually. Without this, the client will run forever, which might be desired for some use-cases.
     await client.stop()
@@ -147,6 +96,106 @@ async def on_client_started(client : ResoniteLinkClient):
 
 # Start the client, it will automatically connect to the first ResoniteLink session it discovers on the local network.
 asyncio.run(client.start(auto_discover=True))
+
+
+
+
+
+
+
+
+# # Creates a new client that connects to ResoniteLink via websocket.
+# client = ResoniteLinkWebsocketClient()
+
+
+# @client.on_started
+# async def on_client_started(client : ResoniteLinkClient):
+#     """
+#     This async function is called by the client at the end of its startup sequence.
+#     You can use it to execute code once the client is up and running!
+
+#     """
+#     def calc_uv_colors(width : int, height : int) -> List[int]:
+#         """
+#         Generates color data for a simple UV texture (X and Y coordinates mapped to R and G).
+
+#         Parameters
+#         ----------
+#         width : int
+#             Width of the texture.
+#         height : int
+#             Height of the texture.
+
+#         Returns
+#         -------
+#         List of RGBA integer values between 0 and 255 (`byte`).
+
+#         """
+#         def _generate() -> Generator[int]:
+#             for x in range(width):
+#                 for y in range(height):
+#                     yield int(x / width * 255)
+#                     yield int(y / height * 255)
+#                     yield 0
+#                     yield 255
+
+#         return list(_generate())
+    
+#     # Imports the color data as a texture.
+#     texture_uri = await client.import_texture_2d_raw_data(
+#         width=1024,
+#         height=1024,
+#         data=calc_uv_colors(1024, 1024)
+#     )
+
+#     # Adds a new slot. Since no parent was specified, it will be added to the world root by default.
+#     slot = await client.add_slot(name="Imported Texture", position=Float3(0, 1.5, 0))
+
+#     # Adds a Texture2DComponent, assigns a reference to the imported texture, and sets up some configuration.
+#     static_texture_2d = await slot.add_component(
+#         "[FrooxEngine]FrooxEngine.StaticTexture2D", 
+#         URL=Field_Uri(texture_uri),
+#         WrapModeU=Field_Enum("Clamp", "[FrooxEngine]FrooxEngine.TextureWrapMode"),
+#         WrapModeV=Field_Enum("Clamp", "[FrooxEngine]FrooxEngine.TextureWrapMode"),
+#         CrunchCompressed=Field_Bool(False),
+#         MipMaps=Field_Bool(False)
+#     )
+    
+#     # Adds an UnlitMaterial and assigns the texture.
+#     material = await slot.add_component(
+#         "[FrooxEngine]FrooxEngine.UnlitMaterial",
+#         Texture=Reference(static_texture_2d.id, "[FrooxEngine]FrooxEngine.IAssetProvider<[FrooxEngine]FrooxEngine.ITexture2D>"),
+#         Sidedness=Field_Enum("Double", "[FrooxEngine]FrooxEngine.Sideness")
+#     )
+    
+#     # Adds a quad mesh to render the texture on.
+#     quad_mesh = await slot.add_component("[FrooxEngine]FrooxEngine.QuadMesh")
+    
+#     # Creates a mesh renderer for the mesh and material.
+#     mesh_renderer = await slot.add_component(
+#         "[FrooxEngine]FrooxEngine.MeshRenderer", 
+#         Mesh=Reference(target_type="[FrooxEngine]FrooxEngine.IAssetProvider<[FrooxEngine]FrooxEngine.Mesh>", target_id=quad_mesh.id),
+#         Materials=SyncList(Reference(target_type="[FrooxEngine]FrooxEngine.IAssetProvider<[FrooxEngine]FrooxEngine.Material>", target_id=material.id))
+#     )
+
+#     # Little hack to fix issue with Materials not being set currently, should be obsolete once SyncList bugs are fixed in ResoniteLink.
+#     await mesh_renderer.update_members(Materials=SyncList(Reference(target_type="[FrooxEngine]FrooxEngine.IAssetProvider<[FrooxEngine]FrooxEngine.Material>", target_id=material.id)))
+
+#     # Adds MeshCollider component.
+#     await slot.add_component("[FrooxEngine]FrooxEngine.MeshCollider")
+    
+#     # Adds Grabbable component and makes it scalable.
+#     await slot.add_component(
+#         "[FrooxEngine]FrooxEngine.Grabbable", 
+#         Scalable=Field_Bool(True)
+#     )
+
+#     # Stops the client manually. Without this, the client will run forever, which might be desired for some use-cases.
+#     await client.stop()
+
+
+# # Start the client, it will automatically connect to the first ResoniteLink session it discovers on the local network.
+# asyncio.run(client.start(auto_discover=True))
 
 
 
